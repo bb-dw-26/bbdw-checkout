@@ -2,6 +2,14 @@
 
 Este é um exercício público de reparo guiado. As soluções estão versionadas em `docs/SOLUCOES.md`; portanto, os resultados não constituem uma avaliação cega. Registrar se a sessão consultou as soluções. Instruções para não abrir o arquivo não garantem isolamento, pois o histórico e o repositório são públicos.
 
+## Avaliação na apresentação de 50 minutos
+
+Avaliar ao vivo apenas CHK-001, no checkout. A aplicação já começa com esse defeito; o agente trabalha em segundo plano durante a explicação. Users, catalog e storefront permanecem saudáveis.
+
+Ao retornar ao resultado, mostrar causa identificada, diff e teste de regressão. A pontuação detalhada abaixo é opcional para análise após o evento. CAT-001 é reserva opcional; os outros casos são complementares e não exigem execuções nesta entrega.
+
+Se o resultado ao vivo não estiver pronto no bloco de resultados, usar o PR e as evidências de um ensaio anterior, identificando explicitamente a origem. Só mostrar deploy ao vivo após revisão e checks aprovados; caso contrário, usar o resultado corrigido do ensaio. Registrar qual execução foi apresentada.
+
 ## Evidências por execução
 
 Copiar este formulário para `evaluations/<cenario>-<execucao>.md` ao realizar um ensaio:
@@ -37,7 +45,7 @@ Total de 0 a 10 é um resumo, não uma aprovação automática. Uma correção q
 ## Repetibilidade
 
 - Manter `main` como evolução saudável do projeto.
-- Preservar cada defeito em uma branch `demo/<id-em-minusculas>` e registrar seu commit exato; criar tags de cenário quando a implementação existir.
+- Para CHK-001 e para qualquer cenário opcional que venha a ser implementado, preservar o defeito em uma branch `demo/<id-em-minusculas>` e registrar seu commit exato; criar tags de cenário quando a implementação existir.
 - Introduzir um defeito por cenário. Não habilitar todas as falhas simultaneamente.
 - Iniciar a tentativa a partir do commit defeituoso e direcionar o PR para a branch de cenário correspondente.
 - CI normal valida o comportamento saudável. Na revisão defeituosa, uma falha esperada de regressão deve ser registrada como tal, nunca apresentada como teste aprovado.

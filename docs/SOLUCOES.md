@@ -4,6 +4,8 @@ Material público para revisão e comparação. O agente pode consultá-lo, e es
 
 ## CHK-001 — Retirada sem endereço
 
+**Prioridade na apresentação:** Principal — único cenário obrigatório.
+
 **Causa planejada:** O checkout acessa customer.address.postalCode antes de verificar fulfillment.
 
 **Correção de referência:** Condicionar a validação e o acesso ao endereço à modalidade delivery; retirada deve funcionar sem endereço.
@@ -19,6 +21,8 @@ Material público para revisão e comparação. O agente pode consultá-lo, e es
 
 
 ## CHK-002 — Carrinho vazio
+
+**Prioridade na apresentação:** Complementar — fora da implementação obrigatória e da agenda de 50 minutos.
 
 **Causa planejada:** O cálculo usa reduce sem acumulador inicial e antes de validar o carrinho.
 

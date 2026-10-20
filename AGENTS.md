@@ -2,6 +2,7 @@
 
 - Escreva documentação, diagnósticos e descrições de PR em português do Brasil.
 - Leia `docs/SPEC.md` e identifique o cenário de `docs/FALHAS.md` associado à tarefa.
+- Priorize o escopo de 50 minutos de `docs/SPEC.md`: somente CHK-001 é obrigatório; CAT-001 é reserva opcional e os demais casos são complementares. Não expanda a implementação para esses casos sem uma tarefa específica.
 - Respeite os contratos HTTP e os limites deste repositório.
 - As soluções públicas em `docs/SOLUCOES.md` podem ser consultadas; informe no PR se foram usadas.
 - Reproduza a falha, acrescente um teste de regressão e aplique uma correção mínima.

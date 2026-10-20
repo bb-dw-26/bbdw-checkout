@@ -4,6 +4,10 @@ Os cenários abaixo são planejados. Ainda não há defeitos executáveis, branc
 
 ## CHK-001 — Retirada sem endereço
 
+**Prioridade na apresentação:** Principal — único cenário obrigatório.
+
+**Abertura ao vivo:** deixar a revisão defeituosa implantada antes do início. Nos primeiros 5 minutos, finalizar a compra pela interface e mostrar Sentry → issue → início do workflow. Continuar a explicação enquanto o agente trabalha; retornar ao PR por volta do minuto 30.
+
 **Preparação:** executar a revisão correspondente a `demo/chk-001` com as fixtures sintéticas e as demais dependências em versões saudáveis.
 
 **Reprodução:** `POST /orders com {"customerId":"customer-pickup","fulfillment":"pickup","items":[{"productId":"product-standard","quantity":2}]}`
@@ -18,6 +22,10 @@ Os cenários abaixo são planejados. Ainda não há defeitos executáveis, branc
 
 
 ## CHK-002 — Carrinho vazio
+
+**Prioridade na apresentação:** Complementar — fora da implementação obrigatória e da agenda de 50 minutos.
+
+**Abertura ao vivo:** deixar a revisão defeituosa implantada antes do início. Nos primeiros 5 minutos, finalizar a compra pela interface e mostrar Sentry → issue → início do workflow. Continuar a explicação enquanto o agente trabalha; retornar ao PR por volta do minuto 30.
 
 **Preparação:** executar a revisão correspondente a `demo/chk-002` com as fixtures sintéticas e as demais dependências em versões saudáveis.
 

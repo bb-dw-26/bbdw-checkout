@@ -15,7 +15,9 @@
         "Entrega sem endereço retorna 422 ADDRESS_REQUIRED.",
         "Entrega com endereço continua funcionando.",
         "Erro de dependência continua sendo tratado como 503."
-      ]
+      ],
+      "presentationRole": "principal",
+      "requiredForPresentation": true
     },
     {
       "id": "CHK-002",
@@ -29,7 +31,18 @@
         "Carrinho vazio retorna 422 e não persiste pedido.",
         "Carrinho vazio não consulta users nem catalog.",
         "Carrinho válido preserva cálculo em centavos e quantidades."
-      ]
+      ],
+      "presentationRole": "complementar",
+      "requiredForPresentation": false
     }
-  ]
+  ],
+  "presentation": {
+    "durationMinutes": 50,
+    "primaryScenario": "CHK-001",
+    "backupScenario": "CAT-001",
+    "startWithFaultyApplication": true,
+    "workflowStartTargetMinute": 5,
+    "resultsTargetMinute": 30,
+    "requiredRepairRepository": "bbw-checkout"
+  }
 }
