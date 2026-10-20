@@ -7,7 +7,7 @@
 - As soluções públicas em `docs/SOLUCOES.md` podem ser consultadas; informe no PR se foram usadas.
 - Reproduza a falha, acrescente um teste de regressão e aplique uma correção mínima.
 - Não desative o Sentry, não esconda exceções, não enfraqueça testes e não altere fixtures para evitar o caso.
-- Relate apenas comandos e verificações realmente executados. Nesta etapa, não há aplicação nem comandos de teste implementados.
+- Relate apenas comandos e verificações realmente executados. Os comandos de execução e verificação estão no README. `main` contém a base saudável; defeitos de demonstração devem ficar em revisões isoladas.
 - Não publique credenciais ou dados reais. Não faça merge nem deploy como parte de uma tarefa de diagnóstico ou abertura de PR.
 - Preserve branches e registros dos cenários. Não reescreva o histórico de ensaios.
 - Ao concluir a tarefa, encerre todos os processos que você iniciou.

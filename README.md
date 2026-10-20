@@ -6,7 +6,7 @@ Consultar clientes e produtos por HTTP, validar o carrinho e criar pedidos fict�
 
 **Tecnologia prevista:** NestJS e TypeScript.
 
-**Estado atual:** especificações iniciais. A aplicação, os defeitos executáveis, a integração Sentry e os workflows de CI/CD e reparo ainda serão implementados.
+**Estado atual:** scaffold funcional e saudável, com testes, Dockerfile e CI próprio. Os defeitos intencionais, Sentry, workflow do agente e deploy para hospedagem ainda serão implementados. A branch `main` não contém CHK-001; o defeito será introduzido em uma revisão isolada.
 
 ## Escopo da apresentação de 50 minutos
 
@@ -21,6 +21,27 @@ Manter quatro aplicações pequenas, dados fictícios em memória, HTTP/JSON e C
 **Papel deste repositório:** Único serviço com defeito na abertura: CHK-001, retirada sem endereço. Implementar o fluxo completo Sentry → issue → agente → PR → revisão → deploy independente. CHK-002 fica como material complementar.
 
 [Roteiro completo e contingência](https://github.com/bbdw-gh-action/bbw-storefront/blob/main/docs/ROTEIRO.md).
+
+## Executar localmente
+
+Pré-requisito: Node.js 24 e npm. Instale as dependências e inicie o modo de desenvolvimento:
+
+```sh
+npm ci
+npm run dev
+```
+
+Porta padrão: **3003**. Os valores locais já funcionam por padrão. Para personalizar, copie `.env.example` para `.env` e ajuste as URLs/porta.
+
+```sh
+npm run check
+```
+
+`npm run build` compila o projeto; `npm start` executa a versão compilada. Os testes HTTP usam portas efêmeras e encerram os servidores automaticamente.
+
+Encerre o processo com **Ctrl+C** ao terminar. Cada aplicação tem seu próprio lockfile ou módulo Go, testes e workflow em `.github/workflows/ci.yml`. O CI também constrói a imagem; a publicação e o deploy serão configurados quando a hospedagem for escolhida.
+
+Para iniciar as quatro aplicações juntas, consulte [execução integrada](https://github.com/bbdw-gh-action/bbw-storefront/blob/main/docs/EXECUCAO.md).
 
 ## Documentação
 

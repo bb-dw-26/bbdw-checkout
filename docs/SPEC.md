@@ -20,7 +20,7 @@ Consultar clientes e produtos por HTTP, validar o carrinho e criar pedidos fict�
 
 É dono dos pedidos. Usa os contratos públicos de users e catalog; não acessa diretamente os dados desses serviços. Não processa pagamentos reais.
 
-Tecnologia: NestJS e TypeScript. Porta local proposta: `3003`. O armazenamento inicial, quando necessário, é em memória, recriado a partir de fixtures em cada inicialização. Persistência durável fica fora desta primeira entrega.
+Tecnologia: NestJS e TypeScript. Porta local proposta: `3003`. Clientes e produtos vêm de fixtures em memória. A criação do pedido retorna a confirmação sem persistência ou histórico nesta versão. Persistência durável fica fora desta primeira entrega.
 
 ## Interface e regras de negócio
 
@@ -48,7 +48,7 @@ Resposta de criação (ID ilustrativo):
 
 Validações retornam 422: `EMPTY_CART`, `ADDRESS_REQUIRED`, `INVALID_QUANTITY`, `DUPLICATE_PRODUCT`, `INVALID_FULFILLMENT`, `CUSTOMER_NOT_FOUND`, `PRODUCT_NOT_FOUND` ou `PRODUCT_UNAVAILABLE`, conforme a causa. Falha de rede ou HTTP 5xx de dependência retorna 503, `DEPENDENCY_UNAVAILABLE`. Use timeout configurável, inicialmente 2 segundos, sem repetição automática de criação de pedidos.
 
-As fixtures em `specs/fixtures.json` são dados de entrada para implementação e testes, não endpoints já disponíveis.
+O scaffold implementa os endpoints e fluxos obrigatórios. Users e catalog carregam as fixtures versionadas; checkout e interface usam os contratos HTTP. Os endpoints marcados como complementares permanecem fora da implementação.
 
 ## Contratos comuns
 
@@ -74,7 +74,7 @@ Se CAT-001 for preparado como reserva, instrumentar a recuperação do panic HTT
 
 **CD previsto:** Imagem própria, URLs de users e catalog configuráveis, deploy apenas do checkout, release e rollback próprios.
 
-O destino de hospedagem será escolhido posteriormente. O workflow de reparo do checkout recebe o incidente CHK-001 e abre um PR no checkout. Workflows equivalentes nos outros repositórios ficam para uma etapa posterior. Os comandos de instalação e verificação serão adicionados junto à implementação; não há workflow de deploy executável nesta etapa.
+O destino de hospedagem será escolhido posteriormente. O workflow de reparo do checkout recebe o incidente CHK-001 e abre um PR no checkout. Workflows equivalentes nos outros repositórios ficam para uma etapa posterior. Os comandos estão no README e o CI em `.github/workflows/ci.yml`. Dockerfile disponível; ainda não há deploy para hospedagem configurado.
 
 ## Critérios de entrega para os 50 minutos
 

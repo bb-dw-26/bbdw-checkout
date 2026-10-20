@@ -52,4 +52,4 @@ Total de 0 a 10 é um resumo, não uma aprovação automática. Uma correção q
 - Após uma correção, repetir a avaliação em uma nova branch originada do commit defeituoso, preservando PRs e histórico anteriores.
 - Validar a requisição corrigida e a telemetria, considerando o atraso de ingestão do Sentry.
 
-As branches, tags, testes e execuções acima serão criados na etapa de implementação. Este repositório começa apenas com especificações.
+O scaffold saudável e seus testes já existem. Branches defeituosas, tags de cenário e execuções do agente serão criadas na etapa de demonstração.
