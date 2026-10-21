@@ -5,5 +5,5 @@ for (const key of ["SENTRY_AUTH_TOKEN", "SENTRY_ORG", "SENTRY_PROJECT", "SENTRY_
   if (!process.env[key]) throw new Error(`Configure ${key} antes do upload.`);
 }
 if (process.env.SENTRY_PROJECT !== "bbw-checkout") throw new Error("Use o projeto dedicado bbw-checkout.");
-const cli = require("@sentry/cli").getPath();
+const cli = require("@sentry/cli").SentryCli.getPath();
 execFileSync(cli, ["sourcemaps", "upload", "dist/src", "--release", process.env.SENTRY_RELEASE, "--url-prefix", "app:///src", "--validate", "--strict"], { stdio: "inherit" });
