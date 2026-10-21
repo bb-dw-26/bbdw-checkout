@@ -4,7 +4,9 @@ import { parseArgs } from "node:util";
 import { setTimeout } from "node:timers/promises";
 import { issueFromEvent, repository } from "./incident.mjs";
 const { values } = parseArgs({ options: {
-  org: { type: "string" }, release: { type: "string" }, run: { type: "string" },
+  org: { type: "string", default: process.env.SENTRY_BRIDGE_ORG },
+  release: { type: "string", default: process.env.SENTRY_BRIDGE_RELEASE },
+  run: { type: "string", default: process.env.SENTRY_BRIDGE_RUN },
   publish: { type: "boolean", default: false }, watch: { type: "boolean", default: false },
 } });
 if (!/^[a-z0-9-]+$/.test(values.org ?? "") || !/^[a-f0-9]{40}$/.test(values.release ?? "") || !/^[a-zA-Z0-9-]{1,64}$/.test(values.run ?? "")) {

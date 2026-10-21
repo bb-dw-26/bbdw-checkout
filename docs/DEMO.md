@@ -4,11 +4,11 @@
 
 `main` é saudável. `demo/chk-001` preserva o acesso indevido a `customer.address.postalCode` antes da validação de modalidade. O defeito é real, sem um botão de erro artificial ou flag que o agente possa simplesmente desligar. Os testes de contrato existentes permanecem iguais e falham nessa revisão.
 
-O checkout tem captura explícita de erros HTTP 5xx pelo SDK Sentry, source maps, ponte local Sentry → issue e workflow Codex → validação independente → PR draft. A conexão com a conta Sentry e o ensaio real do agente dependem da configuração descrita abaixo. Não confundir os testes locais com um evento recebido pelo serviço Sentry ou um reparo já produzido pelo Codex.
+O checkout tem captura explícita de erros HTTP 5xx pelo SDK Sentry, source maps, ponte local Sentry → issue e workflow Codex → validação independente → PR draft. A conexão Sentry, a publicação da issue real e o disparo automático do Actions foram validados. A sessão do agente continua pendente da credencial; consulte VERIFICACAO.md para as evidências.
 
 ## Configuração a concluir
 
-1. Escolher a organização Sentry e criar um projeto exclusivo `bbw-checkout`. Copiar o DSN para `.env`. Não reutilizar projetos de outro produto.
+1. Usar a organização Sentry `bbdw-workshop` e o projeto exclusivo `bbw-checkout`, já criado e vinculado ao repositório. O DSN fica no `.env` local.
 2. Configurar `SENTRY_ENVIRONMENT=bbw-demo`, `DEMO_SCENARIO=CHK-001`, `DEMO_RUN_ID` novo por ensaio e `SENTRY_RELEASE` com o SHA completo de `demo/chk-001`. Não usar `main` ou um nome de branch como release.
 3. Para upload de source maps, configurar localmente `SENTRY_AUTH_TOKEN`, `SENTRY_ORG` e `SENTRY_PROJECT=bbw-checkout`, com permissão para upload. O runtime só precisa do DSN; nenhum token de administração Sentry deve entrar na imagem ou no agente.
 4. No GitHub, configurar o secret `OPENAI_API_KEY` do checkout e permitir a criação de PRs pelo Actions na organização e no repositório. A política do GitHub agrupa criação e aprovação na mesma opção; este workflow não aprova, faz merge ou deploy.
@@ -50,7 +50,7 @@ A ponte consulta somente o projeto `bbw-checkout` escolhido, confere release, ce
 
 1. O cliente sem endereço tenta retirar duas canecas. CHK-001 causa TypeError/500; a interface preserva o carrinho.
 2. O filtro HTTP captura uma vez, marcando serviço, cenário, release, request ID e ensaio. Erros 4xx não geram eventos. `DEMO_SCENARIO` identifica o ensaio; não injeta nem corrige o bug.
-3. A ponte encontra o evento e cria a issue com os dois labels. O evento `issues` inicia `repair.yml`, presente em `main`.
+3. A ponte encontra o evento e cria a issue com os dois labels. A aplicação do label `agent:repair` inicia `repair.yml`, presente em `main`. O evento de abertura e outros labels não iniciam reparos adicionais.
 4. `prepare` exige ator com escrita, labels e release igual ao HEAD de `demo/chk-001`, e rejeita uma issue que já tenha PR. Não executar código trazido na issue.
 5. `repair` instala dependências pelo lockfile e usa a Action oficial Codex em sandbox, com permissões GitHub de leitura e sem credenciais de deploy. O agente recebe a issue, os contratos e as instruções em pt-BR.
 6. `validate`, em outro runner e sem chave do agente, aceita somente alteração de `src/orders.ts` e novos testes. Preserva testes existentes, fixtures, SDK e configuração. Compila e executa os testes novos contra o código defeituoso, exigindo falha; aplica a correção e exige `npm run check` aprovado.
@@ -99,3 +99,15 @@ Ao terminar: Ctrl+C nos terminais da aplicação/ponte e `docker compose down` s
 - [Action oficial Codex](https://github.com/openai/codex-action)
 - [Configuração do SDK Sentry](https://docs.sentry.io/platforms/javascript/guides/node/configuration/options/)
 - [API de eventos Sentry](https://docs.sentry.io/api/events/retrieve-an-issue-event/)
+
+## Publicação automática configurada
+
+O `.env` local pode definir `SENTRY_BRIDGE_ORG`, `SENTRY_BRIDGE_RELEASE` e `SENTRY_BRIDGE_RUN`. Essas variáveis selecionam o incidente independentemente da release do checkout saudável. Argumentos explícitos da CLI têm precedência.
+
+```sh
+npm run sentry:publish
+```
+
+Esse comando ativa `--publish --watch`: consulta a cada cinco segundos por até 60 minutos. A publicação é automática enquanto esse processo estiver rodando; não há um serviço permanente nem um agendamento na nuvem. Mantenha apenas uma instância por ensaio e encerre com Ctrl+C ao terminar. Para mudar o ensaio, atualize as três variáveis ou passe `--org`, `--release` e `--run`.
+
+Em 21/10/2026 a ponte criou a [issue #1](https://github.com/bbdw-gh-action/bbw-checkout/issues/1) e reutilizou a mesma issue nas consultas seguintes. O workflow confere a presença de `OPENAI_API_KEY` antes de instalar/iniciar o agente; se ausente, informa a configuração necessária sem alterar o incidente. Após configurar o secret, retome com `workflow_dispatch`, como documentado acima.

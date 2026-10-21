@@ -1,7 +1,7 @@
 name: Sentry → Codex → PR
 on:
   issues:
-    types: [opened, labeled]
+    types: [labeled]
   workflow_dispatch:
     inputs:
       issue_number:
@@ -15,7 +15,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
   prepare:
-    if: github.ref == 'refs/heads/main' && (github.event_name == 'workflow_dispatch' || contains(github.event.issue.labels.*.name, 'agent:repair'))
+    if: github.ref == 'refs/heads/main' && (github.event_name == 'workflow_dispatch' || github.event.label.name == 'agent:repair')
     runs-on: ubuntu-latest
     timeout-minutes: 3
     permissions:
@@ -45,6 +45,14 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
+      - name: Conferir credencial do agente
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          if [ -z "$OPENAI_API_KEY" ]; then
+            echo "::error::Configure o secret OPENAI_API_KEY em bbw-checkout para executar o Codex. A issue já foi registrada; retome este workflow após configurar a credencial."
+            exit 1
+          fi
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
         with:
           ref: ${{ github.workflow_sha }}

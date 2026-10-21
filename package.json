@@ -14,6 +14,7 @@
     "test": "npm run build && node --test dist/test/*.test.js scripts/*.test.mjs",
     "sentry:upload": "node --env-file-if-exists=.env scripts/upload-sourcemaps.mjs",
     "sentry:bridge": "node --env-file-if-exists=.env scripts/sentry-to-issue.mjs",
+    "sentry:publish": "node --env-file-if-exists=.env scripts/sentry-to-issue.mjs --publish --watch",
     "check": "npm run lint && npm run typecheck && npm test"
   },
   "dependencies": {
