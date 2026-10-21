@@ -8,7 +8,7 @@ O checkout tem captura explícita de erros HTTP 5xx pelo SDK Sentry, source maps
 
 ## Configuração a concluir
 
-1. Usar a organização Sentry `bbdw-workshop` e o projeto exclusivo `bbw-checkout`, já criado e vinculado ao repositório. O DSN fica no `.env` local.
+1. Usar a organização Sentry `bbdw-workshop-jj` e o projeto exclusivo `bbw-checkout`, criado e vinculado a `bbdw-gh-action/bbw-checkout`. O DSN fica no `.env` local.
 2. Configurar `SENTRY_ENVIRONMENT=bbw-demo`, `DEMO_SCENARIO=CHK-001`, `DEMO_RUN_ID` novo por ensaio e `SENTRY_RELEASE` com o SHA completo de `demo/chk-001`. Não usar `main` ou um nome de branch como release.
 3. Para upload de source maps, configurar localmente `SENTRY_AUTH_TOKEN`, `SENTRY_ORG` e `SENTRY_PROJECT=bbw-checkout`, com permissão para upload. O runtime só precisa do DSN; nenhum token de administração Sentry deve entrar na imagem ou no agente.
 4. No GitHub, configurar o secret `OPENAI_API_KEY` do checkout e permitir a criação de PRs pelo Actions na organização e no repositório. A política do GitHub agrupa criação e aprovação na mesma opção; este workflow não aprova, faz merge ou deploy.
@@ -111,3 +111,13 @@ npm run sentry:publish
 Esse comando ativa `--publish --watch`: consulta a cada cinco segundos por até 60 minutos. A publicação é automática enquanto esse processo estiver rodando; não há um serviço permanente nem um agendamento na nuvem. Mantenha apenas uma instância por ensaio e encerre com Ctrl+C ao terminar. Para mudar o ensaio, atualize as três variáveis ou passe `--org`, `--release` e `--run`.
 
 Em 21/10/2026 a ponte criou a [issue #1](https://github.com/bbdw-gh-action/bbw-checkout/issues/1) e reutilizou a mesma issue nas consultas seguintes. O workflow confere a presença de `OPENAI_API_KEY` antes de instalar/iniciar o agente; se ausente, informa a configuração necessária sem alterar o incidente. Após configurar o secret, retome com `workflow_dispatch`, como documentado acima.
+
+## Migração Sentry validada — 21/10/2026
+
+Os quatro projetos foram recriados e vinculados aos respectivos repositórios em `bbdw-workshop-jj` (trial Business; painel informa período de 21/10 a 03/11/2026). Os DSNs locais e do Compose apontam para a nova organização. Os eventos e a issue GitHub #1 anteriores foram preservados.
+
+Source maps reenviados com credencial da nova conta. CHK-001 capturado em [BBW-CHECKOUT-1](https://bbdw-workshop-jj.sentry.io/issues/7804862919/), evento `c79b759b54dd4df9a6b09d2ebedb4862`, revisão `977434de2c892d80c332feab965cf1ddc8f1ed0a`, execução `migration-jj-20261021-122004` e ambiente `bbw-migration-validation`. Um evento observado, sem erros de processamento, com contexto TypeScript em `src/orders.ts:155`. Mapeamento `../../src/` → `src/`, branch `demo/chk-001`. Users, catálogo e storefront também tiveram suas capturas validadas nos projetos próprios.
+
+Ainda pendentes: configurar a regra nativa de criação de issues, adaptar o workflow ao formato e à identidade da integração e executar o agente com sua credencial. A ponte local documentada acima é o mecanismo anterior, não a automação nativa planejada. Não execute a ponte em paralelo com a regra nativa. A validação acima gerou issues Sentry; não publicou novas issues GitHub.
+
+Todos os processos temporários de validação foram encerrados. Processos anteriores precisam recarregar o ambiente. Não houve deploy nem alteração da branch defeituosa.

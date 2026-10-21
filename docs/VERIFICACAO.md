@@ -44,3 +44,7 @@ Os testes existentes não foram removidos ou enfraquecidos. A falha de CI da bra
 - O secret `OPENAI_API_KEY` não estava configurado. A Action não iniciou o proxy e falhou esperando seu arquivo de informações; não houve sessão do agente nem PR. Foi acrescentada uma checagem explícita da credencial no início de `repair`.
 - A abertura com dois labels gerava múltiplos eventos. O gatilho agora aceita apenas `issues:labeled` com `agent:repair`; `workflow_dispatch` permanece disponível. A execução redundante pendente foi cancelada.
 - A ponte de validação foi encerrada após confirmar deduplicação. Para novas capturas automáticas durante o ensaio, iniciar `npm run sentry:publish`; não há processo persistente deixado em segundo plano.
+
+## Nova organização — 21/10/2026
+
+Migração para `bbdw-workshop-jj` validada: [CHK-001](https://bbdw-workshop-jj.sentry.io/issues/7804862919/), evento `c79b759b54dd4df9a6b09d2ebedb4862`, execução `migration-jj-20261021-122004`. A compra de retirada retornou 500 na cópia da revisão defeituosa, e o Sentry resolveu o frame para `src/orders.ts:155`. Um evento; sem erros de processamento. Repositório conectado e source maps reenviados. Os registros anteriores desta página continuam sendo evidências históricas da organização antiga. Nenhuma nova issue GitHub nem execução do agente foi gerada nesta validação.
