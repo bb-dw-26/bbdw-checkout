@@ -1,25 +1,23 @@
-# Automação compartilhada: Patchwork
+# Patchwork v2 — bbdw-checkout
 
-O workflow `.github/workflows/repair.yml` chama o [Patchwork](https://github.com/bbdw-gh-action/patchwork), publicado em um repositório independente. A chamada fixa o SHA da versão `v1.0.0`; o disparo manual continua usando o nome `repair.yml`.
+Este repositório chama a automação compartilhada em `bbdw-gh-action/patchwork`, fixada por SHA em `.github/workflows/repair.yml`. A lógica comum é mantida no Patchwork; este projeto declara suas regras em `.github/patchwork.json`.
 
-O Patchwork concentra os quatro jobs (`prepare`, `propose`, `validate`, `publish`), instalação, execução do agente, artifacts e permissões. O checkout mantém `scripts/agent-workflow.mjs` como adaptador, junto com `incident.mjs` e `native-sentry.mjs`. As regras de CHK-001 continuam aqui: origem nativa Sentry, branch `demo/chk-001`, alteração somente em `src/orders.ts`, teste novo falhando antes e passando depois e PR draft.
+- Branch de destino: `demo/chk-001`. A release do evento Sentry deve ser o SHA completo do HEAD dessa branch e o serviço/projeto deve ser `bbdw-checkout`.
+- Arquivos de produção autorizados: src/orders.ts. Somente novos testes no padrão `^test/patchwork-[a-z0-9-]+\.test\.ts$` são aceitos.
+- Runtime de validação: `node`. Um teste novo precisa falhar antes e passar depois, seguido das verificações completas.
+- Skills próprias: `.agents/skills/`. A skill compartilhada `patchwork-investigation` vem da mesma revisão do motor. O workflow copia ambas da revisão confiável, inclusive quando o código afetado é uma branch antiga.
+- MCP: servidor oficial `@sentry/mcp-server`, instalado pelo lockfile do Patchwork e iniciado via stdio, limitado à organização e ao projeto deste arquivo. Somente ferramentas de consulta ficam disponíveis. O token é passado por variável de ambiente, nunca gravado no TOML, prompt ou artifact.
 
-Os secrets `OPENAI_API_KEY` e `SENTRY_AUTH_TOKEN` são configurados no checkout e repassados explicitamente. O chamador concede escrita como teto de permissões; somente `publish` recebe escrita. Agente e validação usam runners separados com leitura no GitHub. Os artifacts e o PR continuam no repositório do checkout.
+Gatilhos: issue aberta pelo App oficial Sentry com labels `sentry` e `agent:repair`, ou `workflow_dispatch` por colaborador com escrita. O motor confere novamente autor, labels, projeto, release e duplicidade. Uma issue de teste ou evento de revisão antiga não inicia um reparo válido. A regra nativa Sentry → GitHub está configurada no projeto; ela só se aplica a eventos futuros elegíveis.
 
-A chamada foi publicada em `main` junto com a renomeação do consumidor, no commit `bed9f8cc6737cc45d1082e964e0aa4dd33a239e9`. O adaptador nativo está presente nessa revisão. A execução real ainda exige que os secrets e as identidades de serviço e projeto Sentry correspondam a `bbdw-checkout`.
-
-O gatilho é `issues:opened` do App oficial do Sentry, com os labels `sentry` e `agent:repair`. O disparo manual exige colaborador com escrita, conferido pelo adaptador. As descrições antigas de ponte local e gatilho por label são históricas.
+Secrets necessários: `SENTRY_AUTH_TOKEN` (leitura de organização, projeto e eventos, usado em prepare e no MCP) e `OPENAI_API_KEY` (geração da proposta). Configure a chave OpenAI diretamente nos Actions secrets, sem colocá-la em arquivos ou conversas. O repositório deve permitir criação de PRs pelo Actions.
 
 ```sh
 gh workflow run repair.yml --repo bbdw-gh-action/bbdw-checkout --ref main -f issue_number=NUMERO
 ```
 
-## Verificação da extração — 21/10/2026
+O job de validação não recebe secrets; somente a publicação recebe escrita no GitHub. O PR é draft, sem merge ou deploy automáticos. `agent-context.json` registra as skills e ferramentas MCP disponibilizadas; o relatório do agente deve indicar quais foram de fato lidas/consultadas. Disponibilidade não prova uso.
 
-- YAMLs do Patchwork, CI, exemplo e chamador validados com actionlint 1.7.12.
-- Quatro testes do workflow compartilhado aprovados: entradas, identidade e separação de permissões/credenciais.
-- Os 12 testes dos scripts do checkout passaram, incluindo integração nativa e retomada idempotente de publicação.
-- Antes da renomeação dos serviços, o verificador local executou o adaptador contra uma cópia da revisão defeituosa `977434de2c892d80c332feab965cf1ddc8f1ed0a`: o teste novo falhou antes da correção e `npm run check` passou depois, com 14 testes aprovados. Evidências em `.verification/pipeline-20261021-123437`, na raiz do workspace.
-- [CI inicial do Patchwork aprovado](https://github.com/bbdw-gh-action/patchwork/actions/runs/39627008882).
+Essa integração habilita reparos neste serviço, mas não cria branches defeituosas nem novos cenários de demonstração. O ensaio completo ainda depende de um incidente elegível e da credencial do agente.
 
-O ensaio local usou uma proposta sintética, sem chamar o agente ou criar PR real. Uma execução completa no GitHub ainda depende dos secrets e de um incidente elegível com as identidades atuais.
+Os scripts locais da automação v1 permanecem para os ensaios históricos; o workflow v2 executa o motor central, não `scripts/agent-workflow.mjs`.

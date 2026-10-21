@@ -64,3 +64,7 @@ Cada repositório terá seu próprio CI/CD. O workflow de reparo obrigatório ne
 - [bbdw-users](https://github.com/bbdw-gh-action/bbdw-users)
 - [bbdw-catalog](https://github.com/bbdw-gh-action/bbdw-catalog)
 - [bbdw-storefront](https://github.com/bbdw-gh-action/bbdw-storefront)
+
+## Automação compartilhada
+
+Patchwork habilitado neste repositório. Consulte [operação, skills e MCP](docs/PATCHWORK.md).

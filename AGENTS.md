@@ -11,3 +11,9 @@
 - Não publique credenciais ou dados reais. Não faça merge nem deploy como parte de uma tarefa de diagnóstico ou abertura de PR.
 - Preserve branches e registros dos cenários. Não reescreva o histórico de ensaios.
 - Ao concluir a tarefa, encerre todos os processos que você iniciou.
+
+## Patchwork, skills e Sentry
+
+- Em uma execução do Patchwork, leia e use `.agents/skills/service-regression/SKILL.md` e a skill compartilhada `patchwork-investigation`, instalada pelo workflow em `.agents/skills/patchwork-investigation/SKILL.md`.
+- Consulte o MCP `sentry` para o incidente, evento e release recebidos. O workflow limita o servidor ao projeto deste repositório e a ferramentas de leitura.
+- O escopo de arquivos e a branch autorizada estão em `.github/patchwork.json`. A habilitação do Patchwork não autoriza criar novos defeitos de demonstração.

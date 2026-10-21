@@ -78,7 +78,7 @@ Se CAT-001 for preparado como reserva, instrumentar a recuperação do panic HTT
 
 **CD previsto:** Imagem própria, URLs de users e catalog configuráveis, deploy apenas do checkout, release e rollback próprios.
 
-O destino de hospedagem será escolhido posteriormente. O workflow de reparo do checkout recebe o incidente CHK-001 e abre um PR no checkout. Workflows equivalentes nos outros repositórios ficam para uma etapa posterior. Os comandos estão no README e o CI em `.github/workflows/ci.yml`. Dockerfile disponível; ainda não há deploy para hospedagem configurado.
+O destino de hospedagem será escolhido posteriormente. O workflow de reparo do checkout recebe o incidente CHK-001 e abre um PR no checkout. Os quatro repositórios agora possuem chamada ao Patchwork, com skills e MCP Sentry próprios; veja PATCHWORK.md. Os comandos estão no README e o CI em `.github/workflows/ci.yml`. Dockerfile disponível; ainda não há deploy para hospedagem configurado.
 
 ## Critérios de entrega para os 50 minutos
 
@@ -90,3 +90,7 @@ O destino de hospedagem será escolhido posteriormente. O workflow de reparo do 
 - Documentar execução local e encerramento dos processos.
 
 Para checkout, a entrega exige CHK-001 reproduzível, evento Sentry, issue, execução do agente, PR com teste falhando antes e passando depois e repetição da compra corrigida. Para os demais repositórios, a entrega exige suportar essa jornada de forma saudável. As soluções e falhas complementares continuam públicas para exploração posterior, sem obrigação de implementação nesta etapa.
+
+## Automação compartilhada
+
+Patchwork habilitado neste repositório. Consulte [operação, skills e MCP](PATCHWORK.md).
