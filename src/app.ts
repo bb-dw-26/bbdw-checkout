@@ -12,6 +12,7 @@ import { NestFactory } from "@nestjs/core";
 import type { Response } from "express";
 import { configureHttp } from "./http";
 import { Dependencies, OrdersService } from "./orders";
+import { TelemetryShutdown } from "./telemetry";
 
 @Controller()
 class OrdersController {
@@ -31,7 +32,7 @@ class OrdersController {
 
 @Module({
   controllers: [OrdersController],
-  providers: [Dependencies, OrdersService],
+  providers: [Dependencies, OrdersService, TelemetryShutdown],
 })
 class AppModule {}
 

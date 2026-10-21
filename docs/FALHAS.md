@@ -1,6 +1,6 @@
 # Cenários de falha
 
-Os cenários abaixo são planejados. Ainda não há defeitos executáveis, branches de cenário ou eventos Sentry gerados. As reproduções usam os contratos de `SPEC.md`.
+CHK-001 está implementado em `demo/chk-001`, com captura do SDK validada por coletor local. A conexão e o evento na conta Sentry ficam para o ensaio conectado. CHK-002 continua apenas especificado. Consultar [operação da demo](DEMO.md).
 
 ## CHK-001 — Retirada sem endereço
 
@@ -25,7 +25,6 @@ Os cenários abaixo são planejados. Ainda não há defeitos executáveis, branc
 
 **Prioridade na apresentação:** Complementar — fora da implementação obrigatória e da agenda de 50 minutos.
 
-**Abertura ao vivo:** deixar a revisão defeituosa implantada antes do início. Nos primeiros 5 minutos, finalizar a compra pela interface e mostrar Sentry → issue → início do workflow. Continuar a explicação enquanto o agente trabalha; retornar ao PR por volta do minuto 30.
 
 **Preparação:** executar a revisão correspondente a `demo/chk-002` com as fixtures sintéticas e as demais dependências em versões saudáveis.
 

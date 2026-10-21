@@ -4,9 +4,9 @@ Serviço de checkout para a demonstração pública de fluxo agêntico no BBW, a
 
 Consultar clientes e produtos por HTTP, validar o carrinho e criar pedidos fictícios.
 
-**Tecnologia prevista:** NestJS e TypeScript.
+**Tecnologia:** NestJS e TypeScript.
 
-**Estado atual:** scaffold funcional e saudável, com testes, Dockerfile e CI próprio. Os defeitos intencionais, Sentry, workflow do agente e deploy para hospedagem ainda serão implementados. A branch `main` não contém CHK-001; o defeito será introduzido em uma revisão isolada.
+**Estado atual:** aplicação saudável em `main`, Sentry instrumentado, CHK-001 isolado em `demo/chk-001`, ponte Sentry → issue e workflow Codex → validação → PR draft. A conexão Sentry e o ensaio real do agente permanecem pendentes. [Preparação e operação da demo](docs/DEMO.md).
 
 ## Escopo da apresentação de 50 minutos
 
@@ -45,6 +45,7 @@ Para iniciar as quatro aplicações juntas, consulte [execução integrada](http
 
 ## Documentação
 
+- [Preparação de Sentry, ponte e agente](docs/DEMO.md)
 - [Especificação funcional e técnica](docs/SPEC.md)
 - [Cenários de falha e reprodução](docs/FALHAS.md)
 - [Causas e soluções de referência](docs/SOLUCOES.md)
@@ -54,9 +55,9 @@ Para iniciar as quatro aplicações juntas, consulte [execução integrada](http
 
 ## Fluxo da demonstração
 
-Compra com CHK-001 → Sentry → issue em bbw-checkout → GitHub Actions → Copilot ou Codex → PR com correção e teste → revisão → deploy → repetição da requisição.
+Compra com CHK-001 → Sentry → issue em bbw-checkout → GitHub Actions → Codex → PR com correção e teste → revisão → deploy → repetição da requisição.
 
-Cada repositório terá seu próprio CI/CD. O workflow de reparo obrigatório nesta entrega é o do checkout; a expansão para outros repositórios é posterior. A escolha entre Copilot e Codex permanece aberta. As soluções públicas permitem comparar o reparo com os critérios esperados; este é um exercício guiado.
+Cada repositório terá seu próprio CI/CD. O workflow de reparo obrigatório nesta entrega é o do checkout; a expansão para outros repositórios é posterior. Codex é a opção inicial; uma eventual troca para Copilot será avaliada depois. As soluções públicas permitem comparar o reparo com os critérios esperados; este é um exercício guiado.
 
 ## Outros repositórios
 

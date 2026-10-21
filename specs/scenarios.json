@@ -1,6 +1,6 @@
 {
   "service": "bbw-checkout",
-  "status": "specified-not-implemented",
+  "status": "primary-implemented-awaiting-connected-rehearsal",
   "scenarios": [
     {
       "id": "CHK-001",
@@ -17,7 +17,13 @@
         "Erro de dependência continua sendo tratado como 503."
       ],
       "presentationRole": "principal",
-      "requiredForPresentation": true
+      "requiredForPresentation": true,
+      "implementation": {
+        "branch": "demo/chk-001",
+        "telemetry": "local-transport-verified",
+        "agent": "codex",
+        "connectedRehearsal": "pending"
+      }
     },
     {
       "id": "CHK-002",

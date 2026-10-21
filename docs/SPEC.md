@@ -60,6 +60,10 @@ O scaffold implementa os endpoints e fluxos obrigatórios. Users e catalog carre
 - Contratos de erro esperados (4xx) não são falhas inesperadas por padrão. Os defeitos descritos devem gerar exceções reais, instrumentadas explicitamente.
 - A implementação deve evitar captura duplicada da mesma exceção.
 
+## Implementação do cenário principal
+
+Codex é o agente inicial. A instrumentação, a ponte local autenticada e o workflow estão implementados; configuração, limites e pendências do ensaio conectado estão em [DEMO.md](DEMO.md). O PR usa `demo/chk-001` como base, preservando `main` saudável.
+
 ## Observabilidade
 
 Para CHK-001, instrumentar o checkout, publicar source maps associados à release e comprovar o envio de uma exceção real ao Sentry. Propagar o request ID pelos serviços e evitar eventos duplicados. Testes automatizados usam clientes simulados, sem credenciais reais.

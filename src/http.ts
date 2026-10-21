@@ -7,6 +7,7 @@ import {
 } from "@nestjs/common";
 import { randomUUID } from "node:crypto";
 import type { Request, Response, NextFunction } from "express";
+import { captureServerError } from "./telemetry";
 
 export class ApiError extends HttpException {
   constructor(status: number, code: string, message: string) {
@@ -39,7 +40,10 @@ class ApiExceptionFilter implements ExceptionFilter {
       },
       requestId: response.getHeader("X-Request-ID"),
     });
-    if (status === 500) console.error(error);
+    if (status >= 500) {
+      captureServerError(error, String(response.getHeader("X-Request-ID")));
+      console.error(error);
+    }
   }
 }
 
