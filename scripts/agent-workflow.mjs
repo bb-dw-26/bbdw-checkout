@@ -24,6 +24,40 @@ export function validateChanges(lines) {
   return tests;
 }
 
+export function publishProposal({ runGit, runGh, baseSha, number, artifactDir, runId, summaryPath }) {
+  if (!/^\d+$/.test(number) || !/^[a-f0-9]{40}$/.test(baseSha)) throw new Error("Identidade da execução inválida.");
+  const current = runGh(["api", `repos/${repository}/git/ref/heads/${demoBranch}`]);
+  if (current.object.sha !== baseSha) throw new Error("A base mudou durante a execução; não publicar uma correção desatualizada.");
+  const branch = `agent/chk-001-issue-${number}`;
+  const existing = runGh(["pr", "list", "--repo", repository, "--head", branch, "--state", "all", "--json", "url"]);
+  if (existing.length) return existing[0].url;
+  // Validar todos os artifacts antes de publicar qualquer branch.
+  const report = readFileSync(resolve(artifactDir, "report.md"), "utf8").slice(0, 45000);
+  const validation = readFileSync(resolve(artifactDir, "validation.md"), "utf8");
+  runGit(["apply", "--index", resolve(artifactDir, "candidate.patch")]);
+  validateChanges(runGit(["diff", "--cached", "--name-status", "--no-renames"]));
+  const expectedTree = runGit(["write-tree"]);
+  const remote = runGit(["ls-remote", "--heads", "origin", `refs/heads/${branch}`]);
+  if (remote) {
+    // Um push anterior pode ter concluído antes de a criação do PR falhar.
+    // Reutilizar somente a mesma proposta validada, sem force-push ou novo commit.
+    runGit(["fetch", "--no-tags", "origin", `refs/heads/${branch}`]);
+    const remoteTree = runGit(["rev-parse", "FETCH_HEAD^{tree}"]);
+    const parent = runGit(["rev-parse", "FETCH_HEAD^"]);
+    if (remoteTree !== expectedTree || parent !== baseSha) throw new Error("A branch remota contém outra proposta. Preserve-a e revise antes de retomar.");
+  } else {
+    runGit(["switch", "-c", branch]);
+    runGit(["config", "user.name", "github-actions[bot]"]);
+    runGit(["config", "user.email", "41898282+github-actions[bot]@users.noreply.github.com"]);
+    runGit(["commit", "-m", `fix: corrige CHK-001 da issue #${number}`]);
+    runGit(["push", "origin", `HEAD:refs/heads/${branch}`]);
+  }
+  const body = `A retirada sem endereço falha na revisão de demonstração. Esta proposta foi gerada pelo Codex e requer revisão humana.\n\nRelacionado a #${number}. Base: ${baseSha}.\n\n${validation}\n[Execução e evidências](https://github.com/${repository}/actions/runs/${runId})\n\n## Relatório do agente\n\n${report}\n\nO PR é direcionado à branch de demonstração. Sem merge ou deploy automáticos. O token padrão do Actions não dispara outro workflow de PR: a validação acima ocorreu em um job separado antes da publicação.\n`;
+  const pr = runGh(["api", `repos/${repository}/pulls`, "--method", "POST", "--input", "-"], JSON.stringify({ title: "fix: corrige retirada sem endereço (CHK-001)", head: branch, base: demoBranch, body, draft: true }));
+  appendFileSync(summaryPath, `PR para revisão: ${pr.html_url}\n`);
+  return pr.html_url;
+}
+
 if (command === "prepare") {
   if (process.env.GITHUB_REPOSITORY !== repository || !/^\d+$/.test(issueNumber)) throw new Error("Repositório ou issue inválidos.");
   const permission = gh(["api", `repos/${repository}/collaborators/${process.env.GITHUB_ACTOR}/permission`]);
@@ -66,25 +100,7 @@ if (command === "prepare") {
   runNpm("check");
   writeFileSync(resolve(temp, "validation.md"), `Validação independente: teste(s) novo(s) falharam na revisão ${sha}; npm run check passou após aplicar a correção.\n\nTestes novos: ${tests.join(", ")}.\n`);
 } else if (command === "publish") {
-  if (!/^\d+$/.test(issueNumber) || !/^[a-f0-9]{40}$/.test(sha)) throw new Error("Identidade da execução inválida.");
-  const current = gh(["api", `repos/${repository}/git/ref/heads/${demoBranch}`]);
-  if (current.object.sha !== sha) throw new Error("A base mudou durante a execução; não publicar uma correção desatualizada.");
-  const branch = `agent/chk-001-issue-${issueNumber}`;
-  const existing = gh(["pr", "list", "--repo", repository, "--head", branch, "--state", "all", "--json", "url"]);
-  if (existing.length) { console.log(existing[0].url); process.exit(0); }
-  git(["switch", "-c", branch]);
-  git(["apply", "--index", resolve(temp, "candidate.patch")]);
-  validateChanges(git(["diff", "--cached", "--name-status", "--no-renames"]));
-  git(["config", "user.name", "github-actions[bot]"]);
-  git(["config", "user.email", "41898282+github-actions[bot]@users.noreply.github.com"]);
-  git(["commit", "-m", `fix: corrige CHK-001 da issue #${issueNumber}`]);
-  git(["push", "origin", `HEAD:refs/heads/${branch}`]);
-  const report = readFileSync(resolve(temp, "report.md"), "utf8").slice(0, 45000);
-  const validation = readFileSync(resolve(temp, "validation.md"), "utf8");
-  const body = `A retirada sem endereço falha na revisão de demonstração. Esta proposta foi gerada pelo Codex e requer revisão humana.\n\nRelacionado a #${issueNumber}. Base: ${sha}.\n\n${validation}\n[Execução e evidências](https://github.com/${repository}/actions/runs/${process.env.GITHUB_RUN_ID})\n\n## Relatório do agente\n\n${report}\n\nO PR é direcionado à branch de demonstração. Sem merge ou deploy automáticos. O token padrão do Actions não dispara outro workflow de PR: a validação acima ocorreu em um job separado antes da publicação.\n`;
-  const pr = gh(["api", `repos/${repository}/pulls`, "--method", "POST", "--input", "-"], JSON.stringify({ title: "fix: corrige retirada sem endereço (CHK-001)", head: branch, base: demoBranch, body, draft: true }));
-  console.log(pr.html_url);
-  appendFileSync(process.env.GITHUB_STEP_SUMMARY, `PR para revisão: ${pr.html_url}\n`);
+  console.log(publishProposal({ runGit: git, runGh: gh, baseSha: sha, number: issueNumber, artifactDir: temp, runId: process.env.GITHUB_RUN_ID, summaryPath: process.env.GITHUB_STEP_SUMMARY }));
 } else if (command && process.argv[1]?.endsWith("agent-workflow.mjs")) {
   throw new Error(`Comando desconhecido: ${command}`);
 }

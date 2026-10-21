@@ -64,6 +64,8 @@ Para retomar uma issue elegível, após corrigir credenciais/configuração:
 gh workflow run repair.yml --repo bbdw-gh-action/bbw-checkout --ref main -f issue_number=NUMERO
 ```
 
+Se somente o job `publish` falhar depois do push, preferir **Re-run failed jobs** na execução original, enquanto os artifacts estiverem disponíveis (7 dias). O publicador confere a base e o conteúdo da branch remota e retoma a abertura do PR sem adicionar commits ou usar force-push. Se a branch tiver outra proposta ou intervenção posterior, ele interrompe para preservar o trabalho. Relatório e evidência de validação ausentes são detectados antes de publicar a branch.
+
 ## Revisão, repetição e preservação
 
 Revisar causa, diff, teste que falhou antes e passou depois, retirada, entrega sem endereço (422) e entrega com endereço. O PR aponta para a revisão defeituosa; `main` não precisa receber o bug. Para apresentar a correção, executar o commit da proposta revisada em checkout separado ou detached HEAD e reconstruir somente o serviço checkout. Registrar os SHAs e manter a branch defeituosa intacta para os próximos ensaios.
