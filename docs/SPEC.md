@@ -1,4 +1,4 @@
-# Especificação de bbw-checkout
+# Especificação de bbdw-checkout
 
 ## Escopo da apresentação de 50 minutos
 
@@ -12,7 +12,7 @@ Manter quatro aplicações pequenas, dados fictícios em memória, HTTP/JSON e C
 
 **Papel deste repositório:** Único serviço com defeito na abertura: CHK-001, retirada sem endereço. Implementar o fluxo completo Sentry → issue → agente → PR → revisão → deploy independente. CHK-002 fica como material complementar.
 
-[Roteiro completo e contingência](https://github.com/bbdw-gh-action/bbw-storefront/blob/main/docs/ROTEIRO.md).
+[Roteiro completo e contingência](https://github.com/bbdw-gh-action/bbdw-storefront/blob/main/docs/ROTEIRO.md).
 
 ## Objetivo e responsabilidade
 

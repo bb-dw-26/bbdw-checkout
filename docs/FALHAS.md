@@ -16,7 +16,7 @@ CHK-001 está implementado em `demo/chk-001`, com captura do SDK validada por co
 
 **Comportamento correto:** HTTP 201, totalCents=8000 e deliveryAddress=null.
 
-**Telemetria:** registrar serviço `bbw-checkout`, cenário `CHK-001`, release, request ID e stack trace. A mensagem exata da exceção pode variar conforme o runtime.
+**Telemetria:** registrar serviço `bbdw-checkout`, cenário `CHK-001`, release, request ID e stack trace. A mensagem exata da exceção pode variar conforme o runtime.
 
 **Aceitação:** conferir os testes e casos vizinhos em [Soluções de referência](SOLUCOES.md), repetir a requisição e registrar as evidências em [Avaliação](AVALIACAO.md).
 
@@ -34,6 +34,6 @@ CHK-001 está implementado em `demo/chk-001`, com captura do SDK validada por co
 
 **Comportamento correto:** HTTP 422 com error.code=EMPTY_CART; nenhum pedido é criado.
 
-**Telemetria:** registrar serviço `bbw-checkout`, cenário `CHK-002`, release, request ID e stack trace. A mensagem exata da exceção pode variar conforme o runtime.
+**Telemetria:** registrar serviço `bbdw-checkout`, cenário `CHK-002`, release, request ID e stack trace. A mensagem exata da exceção pode variar conforme o runtime.
 
 **Aceitação:** conferir os testes e casos vizinhos em [Soluções de referência](SOLUCOES.md), repetir a requisição e registrar as evidências em [Avaliação](AVALIACAO.md).

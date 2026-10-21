@@ -1,5 +1,5 @@
 {
-  "service": "bbw-checkout",
+  "service": "bbdw-checkout",
   "status": "primary-implemented-awaiting-connected-rehearsal",
   "scenarios": [
     {
@@ -49,6 +49,6 @@
     "startWithFaultyApplication": true,
     "workflowStartTargetMinute": 5,
     "resultsTargetMinute": 30,
-    "requiredRepairRepository": "bbw-checkout"
+    "requiredRepairRepository": "bbdw-checkout"
   }
 }

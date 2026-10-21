@@ -7,7 +7,7 @@ import { dirname, join, resolve } from "node:path";
 import { publishProposal } from "./agent-workflow.mjs";
 
 function fixture(t) {
-  const root = mkdtempSync(join(tmpdir(), "bbw-publish-test-"));
+  const root = mkdtempSync(join(tmpdir(), "bbdw-publish-test-"));
   t.after(() => {
     // Diretório temporário exclusivo deste teste, nunca o checkout do usuário.
     if (dirname(resolve(root)) !== resolve(tmpdir())) throw new Error("Diretório temporário fora do local esperado.");

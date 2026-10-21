@@ -8,9 +8,9 @@ O checkout tem captura explícita de erros HTTP 5xx pelo SDK Sentry, source maps
 
 ## Configuração a concluir
 
-1. Escolher a organização Sentry e criar um projeto exclusivo `bbw-checkout`. Copiar o DSN para `.env`. Não reutilizar projetos de outro produto.
-2. Configurar `SENTRY_ENVIRONMENT=bbw-demo`, `DEMO_SCENARIO=CHK-001`, `DEMO_RUN_ID` novo por ensaio e `SENTRY_RELEASE` com o SHA completo de `demo/chk-001`. Não usar `main` ou um nome de branch como release.
-3. Para upload de source maps, configurar localmente `SENTRY_AUTH_TOKEN`, `SENTRY_ORG` e `SENTRY_PROJECT=bbw-checkout`, com permissão para upload. O runtime só precisa do DSN; nenhum token de administração Sentry deve entrar na imagem ou no agente.
+1. Escolher a organização Sentry e criar um projeto exclusivo `bbdw-checkout`. Copiar o DSN para `.env`. Não reutilizar projetos de outro produto.
+2. Configurar `SENTRY_ENVIRONMENT=bbdw-demo`, `DEMO_SCENARIO=CHK-001`, `DEMO_RUN_ID` novo por ensaio e `SENTRY_RELEASE` com o SHA completo de `demo/chk-001`. Não usar `main` ou um nome de branch como release.
+3. Para upload de source maps, configurar localmente `SENTRY_AUTH_TOKEN`, `SENTRY_ORG` e `SENTRY_PROJECT=bbdw-checkout`, com permissão para upload. O runtime só precisa do DSN; nenhum token de administração Sentry deve entrar na imagem ou no agente.
 4. No GitHub, configurar o secret `OPENAI_API_KEY` do checkout e permitir a criação de PRs pelo Actions na organização e no repositório. A política do GitHub agrupa criação e aprovação na mesma opção; este workflow não aprova, faz merge ou deploy.
 5. A ponte usa `gh` autenticado como colaborador com escrita no checkout. Os labels `sentry` e `agent:repair` devem existir. O token que cria a issue precisa disparar workflows; não usar o `GITHUB_TOKEN` de outro workflow para criá-la.
 
@@ -44,7 +44,7 @@ npm run sentry:bridge -- --org ORGANIZACAO --release SHA_COMPLETO --run ensaio-0
 
 Substituir os três valores pelos da execução. Sem `--publish`, o comando só mostra a issue que seria criada. Sem `--watch`, consulta uma vez. Com `--watch`, consulta a cada 5 segundos por até 60 minutos; Ctrl+C encerra. Manter apenas uma instância por ensaio. Falhas de autenticação/rede são explícitas: corrigir e reiniciar com a mesma identidade, sem criar outra issue manualmente.
 
-A ponte consulta somente o projeto `bbw-checkout` escolhido, confere release, cenário e `demo_run` no evento mais recente do grupo e deduplica por grupo + release + ensaio entre até 1.000 issues recentes. Como usa o evento mais recente, não executar dois ensaios concorrentes no mesmo projeto. Ela copia apenas IDs, link e frames permitidos; não copia payloads, headers ou dados pessoais. A requisição da issue é a fixture pública. Esse adaptador é local, sem um quinto serviço ou uma integração nativa obrigatória.
+A ponte consulta somente o projeto `bbdw-checkout` escolhido, confere release, cenário e `demo_run` no evento mais recente do grupo e deduplica por grupo + release + ensaio entre até 1.000 issues recentes. Como usa o evento mais recente, não executar dois ensaios concorrentes no mesmo projeto. Ela copia apenas IDs, link e frames permitidos; não copia payloads, headers ou dados pessoais. A requisição da issue é a fixture pública. Esse adaptador é local, sem um quinto serviço ou uma integração nativa obrigatória.
 
 ## O que acontece durante a compra
 
@@ -61,7 +61,7 @@ A Action pode levar mais tempo que o bloco de apresentação, não produzir patc
 Para retomar uma issue elegível, após corrigir credenciais/configuração:
 
 ```sh
-gh workflow run repair.yml --repo bbdw-gh-action/bbw-checkout --ref main -f issue_number=NUMERO
+gh workflow run repair.yml --repo bbdw-gh-action/bbdw-checkout --ref main -f issue_number=NUMERO
 ```
 
 Se somente o job `publish` falhar depois do push, preferir **Re-run failed jobs** na execução original, enquanto os artifacts estiverem disponíveis (7 dias). O publicador confere a base e o conteúdo da branch remota e retoma a abertura do PR sem adicionar commits ou usar force-push. Se a branch tiver outra proposta ou intervenção posterior, ele interrompe para preservar o trabalho. Relatório e evidência de validação ausentes são detectados antes de publicar a branch.

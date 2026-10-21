@@ -1,8 +1,8 @@
-export const repository = "bbdw-gh-action/bbw-checkout";
+export const repository = "bbdw-gh-action/bbdw-checkout";
 export const demoBranch = "demo/chk-001";
 export function parseMetadata(body) {
-  const match = body?.match(/<!-- bbw-sentry (\{[^\n]+\}) -->/);
-  if (!match) throw new Error("Issue sem metadados bbw-sentry.");
+  const match = body?.match(/<!-- bbdw-sentry (\{[^\n]+\}) -->/);
+  if (!match) throw new Error("Issue sem metadados bbdw-sentry.");
   const data = JSON.parse(match[1]);
   if (data.scenario !== "CHK-001" || data.branch !== demoBranch ||
       !/^[a-f0-9]{40}$/.test(data.release) || !/^[a-zA-Z0-9-]{1,64}$/.test(data.run) ||
@@ -15,9 +15,9 @@ export function parseMetadata(body) {
 export function issueFromEvent(issue, event, release, run) {
   const tags = Object.fromEntries((event.tags ?? []).map(({ key, value }) => [key, value]));
   const eventRelease = typeof event.release === "string" ? event.release : event.release?.version;
-  if (eventRelease !== release || tags.demo_run !== run || tags.scenario !== "CHK-001" || tags.service !== "bbw-checkout") return null;
+  if (eventRelease !== release || tags.demo_run !== run || tags.scenario !== "CHK-001" || tags.service !== "bbdw-checkout") return null;
   const metadata = { scenario: "CHK-001", branch: demoBranch, release, run, sentryIssue: String(issue.id), event: event.eventID };
-  const marker = `<!-- bbw-sentry ${JSON.stringify(metadata)} -->`;
+  const marker = `<!-- bbdw-sentry ${JSON.stringify(metadata)} -->`;
   parseMetadata(marker);
   const url = new URL(issue.permalink);
   if (url.protocol !== "https:" || !(url.hostname === "sentry.io" || url.hostname.endsWith(".sentry.io"))) throw new Error("URL Sentry inválida.");
