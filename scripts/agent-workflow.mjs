@@ -1,7 +1,8 @@
 import { execFileSync, spawnSync } from "node:child_process";
 import { appendFileSync, readFileSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
-import { parseMetadata, repository, demoBranch } from "./incident.mjs";
+import { repository, demoBranch } from "./incident.mjs";
+import { validateInitiator, resolveNativeIncident, readSentry } from "./native-sentry.mjs";
 
 function git(args, cwd = "app") { return execFileSync("git", args, { cwd, encoding: "utf8" }).trim(); }
 function gh(args, input) { return JSON.parse(execFileSync("gh", args, { encoding: "utf8", input })); }
@@ -60,16 +61,16 @@ export function publishProposal({ runGit, runGh, baseSha, number, artifactDir, r
 
 if (command === "prepare") {
   if (process.env.GITHUB_REPOSITORY !== repository || !/^\d+$/.test(issueNumber)) throw new Error("Repositório ou issue inválidos.");
-  const permission = gh(["api", `repos/${repository}/collaborators/${process.env.GITHUB_ACTOR}/permission`]);
-  if (!["admin", "maintain", "write"].includes(permission.permission)) throw new Error("Somente colaboradores com escrita iniciam o agente.");
   const issue = gh(["api", `repos/${repository}/issues/${issueNumber}`]);
-  if (issue.pull_request || issue.state !== "open" || !["sentry", "agent:repair"].every((label) => issue.labels.some((item) => item.name === label))) throw new Error("Issue precisa estar aberta com labels sentry e agent:repair.");
-  const metadata = parseMetadata(issue.body);
+  const permission = process.env.GITHUB_EVENT_NAME === "workflow_dispatch"
+    ? gh(["api", `repos/${repository}/collaborators/${process.env.GITHUB_ACTOR}/permission`]).permission : undefined;
+  validateInitiator(issue, process.env.GITHUB_EVENT_NAME, process.env.GITHUB_ACTOR, process.env.GITHUB_ACTOR_ID, permission);
   const branch = gh(["api", `repos/${repository}/git/ref/heads/${demoBranch}`]);
-  if (branch.object.sha !== metadata.release) throw new Error("Release do incidente difere da revisão demo/chk-001. Prepare um novo ensaio.");
+  const incident = await resolveNativeIncident(issue, branch.object.sha, readSentry);
+  const metadata = incident.metadata;
   const existing = gh(["pr", "list", "--repo", repository, "--head", `agent/chk-001-issue-${issueNumber}`, "--state", "all", "--json", "url"]);
   if (existing.length) throw new Error(`Esta issue já tem PR: ${existing[0].url}. Use uma nova execução para outro ensaio.`);
-  writeFileSync(resolve(temp, "incident.json"), JSON.stringify({ number: issue.number, url: issue.html_url, title: issue.title, body: issue.body, metadata }, null, 2));
+  writeFileSync(resolve(temp, "incident.json"), JSON.stringify(incident, null, 2));
   output("sha", metadata.release);
   output("issue", issueNumber);
 } else if (command === "prompt") {

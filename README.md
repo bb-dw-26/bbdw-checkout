@@ -6,7 +6,7 @@ Consultar clientes e produtos por HTTP, validar o carrinho e criar pedidos fict�
 
 **Tecnologia:** NestJS e TypeScript.
 
-**Estado atual:** aplicação saudável em `main`, Sentry instrumentado, CHK-001 isolado em `demo/chk-001`, ponte Sentry → issue e workflow Codex → validação → PR draft. A conexão Sentry e o ensaio real do agente permanecem pendentes. [Preparação e operação da demo](docs/DEMO.md).
+**Estado atual:** aplicação saudável em `main`, Sentry instrumentado, CHK-001 isolado em `demo/chk-001`, integração nativa Sentry → issue e workflow Codex → validação → PR draft. O ensaio real do agente depende de `OPENAI_API_KEY`. [Preparação e operação da demo](docs/DEMO.md).
 
 ## Escopo da apresentação de 50 minutos
 
@@ -45,7 +45,7 @@ Para iniciar as quatro aplicações juntas, consulte [execução integrada](http
 
 ## Documentação
 
-- [Preparação de Sentry, ponte e agente](docs/DEMO.md)
+- [Preparação de Sentry, integração nativa e agente](docs/DEMO.md)
 - [Especificação funcional e técnica](docs/SPEC.md)
 - [Cenários de falha e reprodução](docs/FALHAS.md)
 - [Causas e soluções de referência](docs/SOLUCOES.md)

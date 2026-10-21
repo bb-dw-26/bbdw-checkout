@@ -1,6 +1,6 @@
 # Cenários de falha
 
-CHK-001 está implementado em `demo/chk-001`, com captura validada por coletor local e por evento real na organização Sentry `bbdw-workshop`, incluindo resolução TypeScript pelos source maps. As evidências e as etapas ainda pendentes estão em [VERIFICACAO.md](VERIFICACAO.md). CHK-002 continua apenas especificado. Consultar [operação da demo](DEMO.md).
+CHK-001 está implementado em `demo/chk-001`, com captura validada por coletor local e por evento real na organização Sentry `bbdw-workshop-jj`, incluindo resolução TypeScript pelos source maps. As evidências e as etapas ainda pendentes estão em [VERIFICACAO.md](VERIFICACAO.md). CHK-002 continua apenas especificado. Consultar [operação da demo](DEMO.md).
 
 ## CHK-001 — Retirada sem endereço
 

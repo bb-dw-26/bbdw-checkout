@@ -62,7 +62,7 @@ O scaffold implementa os endpoints e fluxos obrigatórios. Users e catalog carre
 
 ## Implementação do cenário principal
 
-Codex é o agente inicial. A instrumentação, a ponte local autenticada e o workflow estão implementados; configuração, limites e pendências do ensaio conectado estão em [DEMO.md](DEMO.md). O PR usa `demo/chk-001` como base, preservando `main` saudável.
+Codex é o agente inicial. A instrumentação, a integração nativa Sentry → GitHub e o workflow estão implementados; configuração, limites e pendências do ensaio conectado estão em [DEMO.md](DEMO.md). O PR usa `demo/chk-001` como base, preservando `main` saudável.
 
 ## Observabilidade
 

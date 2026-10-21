@@ -1,7 +1,7 @@
 name: Sentry → Codex → PR
 on:
   issues:
-    types: [labeled]
+    types: [opened]
   workflow_dispatch:
     inputs:
       issue_number:
@@ -15,7 +15,12 @@ concurrency:
   cancel-in-progress: false
 jobs:
   prepare:
-    if: github.ref == 'refs/heads/main' && (github.event_name == 'workflow_dispatch' || github.event.label.name == 'agent:repair')
+    if: >-
+      github.ref == 'refs/heads/main' &&
+      (github.event_name == 'workflow_dispatch' ||
+       (github.actor == 'sentry[bot]' && github.event.issue.user.id == 39604003 &&
+        contains(github.event.issue.labels.*.name, 'agent:repair') &&
+        contains(github.event.issue.labels.*.name, 'sentry')))
     runs-on: ubuntu-latest
     timeout-minutes: 3
     permissions:
@@ -34,6 +39,7 @@ jobs:
         run: node scripts/agent-workflow.mjs prepare
         env:
           GH_TOKEN: ${{ github.token }}
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
           ISSUE_NUMBER: ${{ github.event.issue.number || inputs.issue_number }}
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
@@ -80,6 +86,7 @@ jobs:
           working-directory: app
           permission-profile: ":workspace"
           safety-strategy: drop-sudo
+          allow-bot-users: sentry[bot]
           prompt-file: ${{ runner.temp }}/prompt.md
           output-file: ${{ runner.temp }}/report.md
       # Após o agente, só exportar a proposta; executar código em outro runner.
