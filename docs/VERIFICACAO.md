@@ -11,9 +11,12 @@ Registro de 21/10/2026. Estes resultados são verificações locais da implement
 | Smoke CHK-001 com 4 apps e navegador | 500, carrinho preservado, request ID correlacionado e um envelope com TypeError e frame `app:///src/orders.js` |
 | Validação do reparo em cópia descartável | Novo teste de serviço falhou na revisão defeituosa; 11 testes passaram após correção de referência |
 | Workflow YAML | `actionlint` aprovado |
+| Retomada da publicação com Git local real | Falha simulada na API depois do push: nova tentativa reutiliza o commit; PR existente não é duplicado; intervenção posterior na branch é preservada; artifact ausente impede publicação |
 | Compose | Configuração validada; containers não executados localmente nesta verificação |
 
 A correção usada para verificar o validador foi montada explicitamente a partir da referência saudável, sem invocar Codex e sem criar PR fictício. Não apresentar essa evidência como uma resolução autônoma.
+
+Os três testes adicionais de publicação usam repositórios Git temporários e uma API GitHub simulada; nenhum PR é criado por eles. Com esses testes, a suíte saudável contém 13 testes.
 
 Os testes existentes não foram removidos ou enfraquecidos. A falha de CI da branch `demo/chk-001` é esperada; `main` precisa continuar saudável. Os smoke tests encerraram os processos iniciados.
 
