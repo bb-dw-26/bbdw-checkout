@@ -48,7 +48,7 @@ Copiar o SHA exibido para `SENTRY_RELEASE` no `.env`. Com a conexão configurada
 npm run sentry:upload
 ```
 
-O comando usa `dist/src`, fontes embutidas nos mapas e prefixo `app:///src`; o SDK normaliza os frames para o mesmo prefixo. Usar `npm start` na demonstração, para executar o build associado à release, em vez do servidor de desenvolvimento. Confirmar a resolução TypeScript no Sentry no ensaio conectado.
+O comando usa `dist/src`, fontes embutidas nos mapas e prefixo `app:///src`; o SDK normaliza os frames para o mesmo prefixo. O upload deve terminar antes do ensaio; confirmar a disponibilidade dos mapas no Sentry antes da primeira compra, pois atraso de propagação pode separar o mesmo erro em dois grupos. Usar `npm start` na demonstração, para executar o build associado à release, em vez do servidor de desenvolvimento. Confirmar a resolução TypeScript no Sentry no ensaio conectado.
 
 No storefront, `docker compose up --build` inicia os quatro serviços, usando a revisão local de cada repositório. Definir as mesmas variáveis Sentry no `.env` do storefront para o Compose repassá-las ao checkout. Elas não usam prefixo `VITE_` nem entram no código do navegador. Também é possível executar sem Docker, conforme `EXECUCAO.md` do storefront.
 
@@ -60,7 +60,7 @@ Antes do início, verificar `/health`, deixar a UI pronta e conferir que a regra
 2. O filtro HTTP captura uma vez, marcando serviço, cenário, release, request ID e ensaio. Erros 4xx não geram eventos. `DEMO_SCENARIO` identifica o ensaio; não injeta nem corrige o bug.
 3. O Sentry cria a issue pelo App oficial `sentry[bot]`, com os dois labels. `issues:opened` inicia `repair.yml` em `main`; aplicar labels depois não dispara outro reparo.
 4. `prepare` confere autor/remetente `sentry[bot]` (ID `39604003`), labels e link da organização permitida. Consulta a API Sentry e exige projeto checkout, cenário CHK-001, serviço, ensaio e release igual ao HEAD de `demo/chk-001`. Rejeita uma issue que já tenha PR. Em disparo manual, exige colaborador com escrita. O corpo original da issue não é repassado ao agente: o contexto é reconstruído com IDs, frames permitidos e a fixture pública de reprodução, sem payloads ou headers.
-5. `repair` instala dependências pelo lockfile e usa a Action oficial Codex em sandbox, com permissões GitHub de leitura e sem credenciais de deploy. O agente recebe o contexto validado do incidente, os contratos e as instruções em pt-BR. A Action permite explicitamente somente o bot Sentry (`allow-bot-users: sentry[bot]`).
+5. `propose` instala dependências pelo lockfile e usa a Action oficial Codex em sandbox, com permissões GitHub de leitura e sem credenciais de deploy. O agente recebe o contexto validado do incidente, os contratos e as instruções em pt-BR. A Action permite explicitamente somente o bot Sentry (`allow-bot-users: sentry[bot]`).
 6. `validate`, em outro runner e sem chave do agente, aceita somente alteração de `src/orders.ts` e novos testes. Preserva testes existentes, fixtures, SDK e configuração. Compila e executa os testes novos contra o código defeituoso, exigindo falha; aplica a correção e exige `npm run check` aprovado.
 7. `publish`, em outro runner, aplica a proposta sem executar seu código e abre PR draft para `demo/chk-001`. O PR inclui relatório, evidências, consulta ao gabarito e link da execução. O token padrão do Actions não dispara outro CI de PR: o job independente `validate` é a evidência desta automação. Para nova checagem na revisão do PR, disparar CI manualmente.
 
@@ -113,3 +113,7 @@ Ao terminar: Ctrl+C nos terminais da aplicação e `docker compose down` se tive
 Os quatro projetos e seus vínculos foram migrados para `bbdw-workshop-jj`, com DSNs próprios e source maps reenviados. A validação anterior resolveu CHK-001 para `src/orders.ts:155`, na revisão `977434de2c892d80c332feab965cf1ddc8f1ed0a`.
 
 A pedido do responsável, as quatro issues de teste dessa organização e a antiga issue GitHub #1 foram excluídas antes do ensaio nativo. O histórico da organização antiga foi preservado. As evidências da nova execução são registradas em [VERIFICACAO.md](VERIFICACAO.md).
+
+## Ensaio nativo validado
+
+A [issue #2](https://github.com/bbdw-gh-action/bbdw-checkout/issues/2) foi criada pelo Sentry e iniciou o [Patchwork](https://github.com/bbdw-gh-action/bbdw-checkout/actions/runs/39628026728), com `prepare` aprovado. A repetição entrou no mesmo grupo sem nova issue. Falta configurar `OPENAI_API_KEY` para executar o agente; depois, retomar a issue #2 com `workflow_dispatch`. A revisão defeituosa atual é `458c5fcb9145acff7ecf1b1d826ee9d2d7dd2e79`. [Evidências completas](VERIFICACAO.md).
