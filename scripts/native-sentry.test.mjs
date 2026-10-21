@@ -5,10 +5,10 @@ import { validateNativeIssue, validateInitiator, resolveNativeIncident, sentryPr
 const sha = "a".repeat(40);
 const issue = { number: 2, state: "open", user: { login: "sentry[bot]", id: 39604003, type: "Bot" },
   performed_via_github_app: { id: 12637 }, labels: [{ name: "sentry" }, { name: "agent:repair" }],
-  body: "Sentry Issue: [BBW-CHECKOUT-2](https://bbdw-workshop-jj.sentry.io/issues/42/?referrer=github_integration)\nDados externos não confiáveis" };
-const detail = { id: "42", project: { id: sentryProjectId, slug: "bbw-checkout" } };
+  body: "Sentry Issue: [BBDW-CHECKOUT-2](https://bbdw-workshop-jj.sentry.io/issues/42/?referrer=github_integration)\nDados externos não confiáveis" };
+const detail = { id: "42", project: { id: sentryProjectId, slug: "bbdw-checkout" } };
 const event = { eventID: "b".repeat(32), release: { version: sha }, tags: [
-  { key: "service", value: "bbw-checkout" }, { key: "scenario", value: "CHK-001" }, { key: "demo_run", value: "ensaio-1" }],
+  { key: "service", value: "bbdw-checkout" }, { key: "scenario", value: "CHK-001" }, { key: "demo_run", value: "ensaio-1" }],
   entries: [{ type: "exception", data: { values: [{ stacktrace: { frames: [{ filename: "../../src/orders.ts", lineNo: 155 }] } }] } }] };
 const lookup = (d = detail, e = event) => async (path) => path.endsWith("events/latest/") ? e : d;
 
@@ -49,7 +49,7 @@ test("valida remetente automático e permissão do disparo manual", () => {
 });
 
 test("rejeita evento de outro projeto, cenário ou revisão", async () => {
-  await assert.rejects(resolveNativeIncident(issue, sha, lookup({ ...detail, project: { id: "1", slug: "bbw-users" } })));
+  await assert.rejects(resolveNativeIncident(issue, sha, lookup({ ...detail, project: { id: "1", slug: "bbdw-users" } })));
   await assert.rejects(resolveNativeIncident(issue, "c".repeat(40), lookup()));
   await assert.rejects(resolveNativeIncident(issue, sha, lookup(detail, { ...event, tags: event.tags.map(t => t.key === "scenario" ? { ...t, value: "SDK-SMOKE" } : t) })));
   await assert.rejects(resolveNativeIncident(issue, sha, lookup(detail, { ...event, tags: event.tags.filter(t => t.key !== "demo_run") })));

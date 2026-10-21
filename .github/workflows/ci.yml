@@ -22,4 +22,4 @@ jobs:
       - run: npm ci
       - run: npm run check
       - name: Validar imagem
-        run: docker build -t bbw-checkout:ci .
+        run: docker build -t bbdw-checkout:ci .

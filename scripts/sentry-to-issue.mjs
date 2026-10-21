@@ -27,7 +27,7 @@ const controller = new AbortController();
 process.once("SIGINT", () => controller.abort());
 process.once("SIGTERM", () => controller.abort());
 const deadline = Date.now() + 60 * 60 * 1000;
-const project = await sentry(`projects/${values.org}/bbw-checkout/`);
+const project = await sentry(`projects/${values.org}/bbdw-checkout/`);
 do {
   const query = new URLSearchParams({ project: project.id, query: `release:${values.release} demo_run:${values.run} scenario:CHK-001`, statsPeriod: "24h" });
   const issues = await sentry(`organizations/${values.org}/issues/?${query}`);

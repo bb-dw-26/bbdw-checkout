@@ -4,7 +4,7 @@ import { issueFromEvent, parseMetadata } from "./incident.mjs";
 const release = "a".repeat(40);
 const issue = { id: "42", permalink: "https://example.sentry.io/issues/42/" };
 const event = { eventID: "b".repeat(32), release: { version: release }, tags: [
-  { key: "service", value: "bbw-checkout" }, { key: "scenario", value: "CHK-001" },
+  { key: "service", value: "bbdw-checkout" }, { key: "scenario", value: "CHK-001" },
   { key: "demo_run", value: "ensaio-001" }, { key: "request_id", value: "request-42" },
 ], entries: [{ type: "exception", data: { values: [{ value: "private payload", stacktrace: { frames: [
   { filename: "app:///src/orders.js", lineNo: 123 }, { filename: "/private/path.js", lineNo: 99 },

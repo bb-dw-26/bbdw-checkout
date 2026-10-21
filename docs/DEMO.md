@@ -1,5 +1,7 @@
 # Preparar CHK-001 e o fluxo de reparo
 
+O workflow foi extraído para o [Patchwork](https://github.com/bbdw-gh-action/patchwork). A chamada local e as condições de ativação estão em [PATCHWORK.md](PATCHWORK.md).
+
 ## Estado da implementação
 
 `main` é saudável. `demo/chk-001` preserva o acesso indevido a `customer.address.postalCode` antes da validação de modalidade. O defeito é real, sem um botão de erro artificial ou flag que o agente possa simplesmente desligar. Os testes de contrato existentes permanecem iguais e falham nessa revisão.
@@ -8,20 +10,20 @@ O checkout captura erros HTTP 5xx pelo SDK Sentry. A integração nativa Sentry 
 
 ## Configuração a concluir
 
-1. Usar a organização Sentry `bbdw-workshop-jj` e o projeto exclusivo `bbw-checkout`, criado e vinculado a `bbdw-gh-action/bbw-checkout`. O DSN fica no `.env` local.
-2. Configurar `SENTRY_ENVIRONMENT=bbw-demo`, `DEMO_SCENARIO=CHK-001`, `DEMO_RUN_ID` novo por ensaio e `SENTRY_RELEASE` com o SHA completo de `demo/chk-001`. Não usar `main` ou um nome de branch como release.
-3. Para upload de source maps, configurar localmente `SENTRY_AUTH_TOKEN`, `SENTRY_ORG` e `SENTRY_PROJECT=bbw-checkout`, com permissão para upload. O runtime só precisa do DSN; nenhum token de administração Sentry deve entrar na imagem ou no agente.
+1. Usar a organização Sentry `bbdw-workshop-jj` e o projeto exclusivo `bbdw-checkout`, criado e vinculado a `bbdw-gh-action/bbdw-checkout`. O DSN fica no `.env` local.
+2. Configurar `SENTRY_ENVIRONMENT=bbdw-demo`, `DEMO_SCENARIO=CHK-001`, `DEMO_RUN_ID` novo por ensaio e `SENTRY_RELEASE` com o SHA completo de `demo/chk-001`. Não usar `main` ou um nome de branch como release.
+3. Para upload de source maps, configurar localmente `SENTRY_AUTH_TOKEN`, `SENTRY_ORG` e `SENTRY_PROJECT=bbdw-checkout`, com permissão para upload. O runtime só precisa do DSN; nenhum token de administração Sentry deve entrar na imagem ou no agente.
 4. No GitHub, configurar o secret `OPENAI_API_KEY` do checkout e permitir a criação de PRs pelo Actions na organização e no repositório. A política do GitHub agrupa criação e aprovação na mesma opção; este workflow não aprova, faz merge ou deploy.
 5. Configurar `SENTRY_AUTH_TOKEN` nos secrets do checkout, com acesso de leitura a issues/eventos de `bbdw-workshop-jj`. Ele é usado somente pelo job `prepare`; não é passado ao agente, à aplicação nem aos jobs de validação/publicação. Para um token dedicado, usar as permissões de leitura necessárias à API de eventos (`event:read`) e ao projeto (`project:read`).
 6. Autorizar o App oficial Sentry nos quatro repos e conectar cada projeto ao respectivo repo. A automação de reparo fica somente no checkout. Os labels `sentry` e `agent:repair` devem existir.
 
 ## Regra nativa no Sentry
 
-Organização: `bbdw-workshop-jj`. Alerta: **BBW CHK-001 - criar issue GitHub** (`6206688`), associado ao monitor de erros do checkout (`10714423`).
+Organização: `bbdw-workshop-jj`. Alerta: **BBDW CHK-001 - criar issue GitHub** (`6206688`), associado ao monitor de erros do checkout (`10714423`).
 
 - Disparo: primeiro evento de uma issue ou regressão.
-- Filtros: `scenario=CHK-001` **e** `service=bbw-checkout`.
-- Ação: GitHub, integração `546121`, repositório `bbdw-gh-action/bbw-checkout`, labels `sentry` e `agent:repair`, sem responsável fixo.
+- Filtros: `scenario=CHK-001` **e** `service=bbdw-checkout`.
+- Ação: GitHub, integração `546121`, repositório `bbdw-gh-action/bbdw-checkout`, labels `sentry` e `agent:repair`, sem responsável fixo.
 - Intervalo mínimo configurado: 5 minutos. O agrupamento e os vínculos do Sentry também determinam se haverá nova issue.
 
 A configuração versionada está em [sentry-alert.json](sentry-alert.json). Ela contém identificadores públicos da conta, sem credenciais. A integração usa o GitHub App para publicar, permitindo o evento `issues:opened` no Actions. Não há receptor de webhook hospedado pelo projeto nem ponte local obrigatória.
@@ -67,7 +69,7 @@ A Action pode levar mais tempo que o bloco de apresentação, não produzir patc
 Para retomar uma issue elegível, após corrigir credenciais/configuração:
 
 ```sh
-gh workflow run repair.yml --repo bbdw-gh-action/bbw-checkout --ref main -f issue_number=NUMERO
+gh workflow run repair.yml --repo bbdw-gh-action/bbdw-checkout --ref main -f issue_number=NUMERO
 ```
 
 Se somente o job `publish` falhar depois do push, preferir **Re-run failed jobs** na execução original, enquanto os artifacts estiverem disponíveis (7 dias). O publicador confere a base e o conteúdo da branch remota e retoma a abertura do PR sem adicionar commits ou usar force-push. Se a branch tiver outra proposta ou intervenção posterior, ele interrompe para preservar o trabalho. Relatório e evidência de validação ausentes são detectados antes de publicar a branch.

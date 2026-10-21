@@ -1,169 +1,37 @@
-name: Sentry → Codex → PR
+name: Patchwork
 on:
   issues:
     types: [opened]
   workflow_dispatch:
     inputs:
       issue_number:
-        description: Número da issue Sentry de CHK-001
+        description: Número da issue do incidente
         required: true
         type: string
 permissions:
   contents: read
-concurrency:
-  group: repair-${{ github.event.issue.number || inputs.issue_number }}
-  cancel-in-progress: false
 jobs:
-  prepare:
+  patchwork:
+    # Exemplo da política atual do bbdw-checkout. O adaptador valida novamente
+    # a identidade do iniciador, a issue, o projeto e a release do incidente.
     if: >-
       github.ref == 'refs/heads/main' &&
       (github.event_name == 'workflow_dispatch' ||
        (github.actor == 'sentry[bot]' && github.event.issue.user.id == 39604003 &&
         contains(github.event.issue.labels.*.name, 'agent:repair') &&
         contains(github.event.issue.labels.*.name, 'sentry')))
-    runs-on: ubuntu-latest
-    timeout-minutes: 3
-    permissions:
-      contents: read
-      issues: read
-      pull-requests: read
-    outputs:
-      sha: ${{ steps.incident.outputs.sha }}
-      issue: ${{ steps.incident.outputs.issue }}
-    steps:
-      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
-        with:
-          ref: ${{ github.workflow_sha }}
-          persist-credentials: false
-      - id: incident
-        run: node scripts/agent-workflow.mjs prepare
-        env:
-          GH_TOKEN: ${{ github.token }}
-          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
-          ISSUE_NUMBER: ${{ github.event.issue.number || inputs.issue_number }}
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
-        with:
-          name: incident
-          path: ${{ runner.temp }}/incident.json
-          retention-days: 7
-  repair:
-    needs: prepare
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
-    steps:
-      - name: Conferir credencial do agente
-        env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-        run: |
-          if [ -z "$OPENAI_API_KEY" ]; then
-            echo "::error::Configure o secret OPENAI_API_KEY em bbw-checkout para executar o Codex. A issue já foi registrada; retome este workflow após configurar a credencial."
-            exit 1
-          fi
-      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
-        with:
-          ref: ${{ github.workflow_sha }}
-          path: automation
-          persist-credentials: false
-      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
-        with:
-          ref: ${{ needs.prepare.outputs.sha }}
-          path: app
-          persist-credentials: false
-      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38
-        with:
-          node-version-file: app/.nvmrc
-      - run: npm ci
-        working-directory: app
-      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
-        with:
-          name: incident
-          path: ${{ runner.temp }}
-      - run: node automation/scripts/agent-workflow.mjs prompt
-      - name: Analisar e corrigir com Codex
-        uses: openai/codex-action@c05cfd74ad95c626cdf05c6685e62becc3bf7813
-        with:
-          openai-api-key: ${{ secrets.OPENAI_API_KEY }}
-          working-directory: app
-          permission-profile: ":workspace"
-          safety-strategy: drop-sudo
-          allow-bot-users: sentry[bot]
-          prompt-file: ${{ runner.temp }}/prompt.md
-          output-file: ${{ runner.temp }}/report.md
-      # Após o agente, só exportar a proposta; executar código em outro runner.
-      - run: node automation/scripts/agent-workflow.mjs export
-        env:
-          BASE_SHA: ${{ needs.prepare.outputs.sha }}
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
-        if: always()
-        with:
-          name: proposal
-          path: |
-            ${{ runner.temp }}/candidate.patch
-            ${{ runner.temp }}/report.md
-          retention-days: 7
-  validate:
-    needs: [prepare, repair]
-    runs-on: ubuntu-latest
-    timeout-minutes: 8
-    steps:
-      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
-        with:
-          ref: ${{ github.workflow_sha }}
-          path: automation
-          persist-credentials: false
-      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
-        with:
-          ref: ${{ needs.prepare.outputs.sha }}
-          path: app
-          persist-credentials: false
-      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38
-        with:
-          node-version-file: app/.nvmrc
-      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
-        with:
-          name: proposal
-          path: ${{ runner.temp }}
-      - run: npm ci
-        working-directory: app
-      - run: node automation/scripts/agent-workflow.mjs validate
-        env:
-          BASE_SHA: ${{ needs.prepare.outputs.sha }}
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
-        if: always()
-        with:
-          name: validation
-          path: |
-            ${{ runner.temp }}/validation.md
-            ${{ runner.temp }}/regression-before.log
-          retention-days: 7
-  publish:
-    needs: [prepare, validate]
-    runs-on: ubuntu-latest
-    timeout-minutes: 3
     permissions:
       contents: write
+      issues: read
       pull-requests: write
-    steps:
-      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
-        with:
-          ref: ${{ github.workflow_sha }}
-          path: automation
-          persist-credentials: false
-      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
-        with:
-          ref: ${{ needs.prepare.outputs.sha }}
-          path: app
-      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
-        with:
-          name: proposal
-          path: ${{ runner.temp }}
-      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
-        with:
-          name: validation
-          path: ${{ runner.temp }}
-      - name: Abrir PR sem executar a proposta
-        run: node automation/scripts/agent-workflow.mjs publish
-        env:
-          GH_TOKEN: ${{ github.token }}
-          BASE_SHA: ${{ needs.prepare.outputs.sha }}
-          ISSUE_NUMBER: ${{ needs.prepare.outputs.issue }}
+    # Patchwork v1.0.0: atualização deliberada por SHA.
+    uses: bbdw-gh-action/patchwork/.github/workflows/patchwork.yml@d712ff458934a6fbfea657ff537369e02c012f76
+    with:
+      issue_number: ${{ format('{0}', github.event.issue.number || inputs.issue_number) }}
+      adapter_path: scripts/agent-workflow.mjs
+      node_version: '24'
+      install_command: npm ci
+      allow_bot_users: sentry[bot]
+    secrets:
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}

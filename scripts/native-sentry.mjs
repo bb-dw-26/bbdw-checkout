@@ -28,8 +28,8 @@ export function validateInitiator(issue, eventName, actor, actorId, permission) 
 export async function resolveNativeIncident(issue, headSha, fetchSentry) {
   const id = validateNativeIssue(issue);
   const detail = await fetchSentry(`organizations/${sentryOrg}/issues/${id}/`);
-  if (String(detail.id) !== id || String(detail.project?.id) !== sentryProjectId || detail.project?.slug !== "bbw-checkout") {
-    throw new Error("Incidente não pertence ao projeto bbw-checkout da nova organização.");
+  if (String(detail.id) !== id || String(detail.project?.id) !== sentryProjectId || detail.project?.slug !== "bbdw-checkout") {
+    throw new Error("Incidente não pertence ao projeto bbdw-checkout da nova organização.");
   }
   const event = await fetchSentry(`organizations/${sentryOrg}/issues/${id}/events/latest/`);
   const tags = Object.fromEntries((event.tags ?? []).map(({ key, value }) => [key, value]));

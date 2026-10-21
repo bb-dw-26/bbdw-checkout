@@ -1,6 +1,6 @@
-# bbw-checkout
+# bbdw-checkout
 
-Serviço de checkout para a demonstração pública de fluxo agêntico no BBW, apresentação do Banco do Brasil.
+Serviço de checkout para a demonstração pública de fluxo agêntico no BBDW, apresentação do Banco do Brasil.
 
 Consultar clientes e produtos por HTTP, validar o carrinho e criar pedidos fictícios.
 
@@ -20,7 +20,7 @@ Manter quatro aplicações pequenas, dados fictícios em memória, HTTP/JSON e C
 
 **Papel deste repositório:** Único serviço com defeito na abertura: CHK-001, retirada sem endereço. Implementar o fluxo completo Sentry → issue → agente → PR → revisão → deploy independente. CHK-002 fica como material complementar.
 
-[Roteiro completo e contingência](https://github.com/bbdw-gh-action/bbw-storefront/blob/main/docs/ROTEIRO.md).
+[Roteiro completo e contingência](https://github.com/bbdw-gh-action/bbdw-storefront/blob/main/docs/ROTEIRO.md).
 
 ## Executar localmente
 
@@ -41,7 +41,7 @@ npm run check
 
 Encerre o processo com **Ctrl+C** ao terminar. Cada aplicação tem seu próprio lockfile ou módulo Go, testes e workflow em `.github/workflows/ci.yml`. O CI também constrói a imagem; a publicação e o deploy serão configurados quando a hospedagem for escolhida.
 
-Para iniciar as quatro aplicações juntas, consulte [execução integrada](https://github.com/bbdw-gh-action/bbw-storefront/blob/main/docs/EXECUCAO.md).
+Para iniciar as quatro aplicações juntas, consulte [execução integrada](https://github.com/bbdw-gh-action/bbdw-storefront/blob/main/docs/EXECUCAO.md).
 
 ## Documentação
 
@@ -55,12 +55,12 @@ Para iniciar as quatro aplicações juntas, consulte [execução integrada](http
 
 ## Fluxo da demonstração
 
-Compra com CHK-001 → Sentry → issue em bbw-checkout → GitHub Actions → Codex → PR com correção e teste → revisão → deploy → repetição da requisição.
+Compra com CHK-001 → Sentry → issue em bbdw-checkout → GitHub Actions → Codex → PR com correção e teste → revisão → deploy → repetição da requisição.
 
 Cada repositório terá seu próprio CI/CD. O workflow de reparo obrigatório nesta entrega é o do checkout; a expansão para outros repositórios é posterior. Codex é a opção inicial; uma eventual troca para Copilot será avaliada depois. As soluções públicas permitem comparar o reparo com os critérios esperados; este é um exercício guiado.
 
 ## Outros repositórios
 
-- [bbw-users](https://github.com/bbdw-gh-action/bbw-users)
-- [bbw-catalog](https://github.com/bbdw-gh-action/bbw-catalog)
-- [bbw-storefront](https://github.com/bbdw-gh-action/bbw-storefront)
+- [bbdw-users](https://github.com/bbdw-gh-action/bbdw-users)
+- [bbdw-catalog](https://github.com/bbdw-gh-action/bbdw-catalog)
+- [bbdw-storefront](https://github.com/bbdw-gh-action/bbdw-storefront)

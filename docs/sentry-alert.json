@@ -1,5 +1,5 @@
 {
-  "name": "BBW CHK-001 - criar issue GitHub",
+  "name": "BBDW CHK-001 - criar issue GitHub",
   "enabled": true,
   "detectorIds": [
     "10714423"
@@ -40,7 +40,7 @@
           "comparison": {
             "key": "service",
             "match": "eq",
-            "value": "bbw-checkout"
+            "value": "bbdw-checkout"
           },
           "conditionResult": true
         }
@@ -57,7 +57,7 @@
           },
           "data": {
             "additional_fields": {
-              "repo": "bbdw-gh-action/bbw-checkout",
+              "repo": "bbdw-gh-action/bbdw-checkout",
               "labels": [
                 "sentry",
                 "agent:repair"
