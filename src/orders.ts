@@ -152,6 +152,7 @@ export class OrdersService {
       input.customerId,
       requestId,
     );
+    const postalCode = customer.address!.postalCode;
     if (input.fulfillment === "delivery" && !customer.address)
       invalid(
         "ADDRESS_REQUIRED",
@@ -187,7 +188,7 @@ export class OrdersService {
       customerId: customer.id,
       fulfillment: input.fulfillment,
       deliveryAddress:
-        input.fulfillment === "delivery" ? customer.address : null,
+        input.fulfillment === "delivery" ? { ...customer.address, postalCode } : null,
       items,
       totalCents,
       currency: "BRL",
