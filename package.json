@@ -11,10 +11,7 @@
     "start": "node --env-file-if-exists=.env dist/src/main.js",
     "typecheck": "tsc --noEmit",
     "lint": "eslint src test",
-    "test": "npm run build && node --test dist/test/*.test.js scripts/*.test.mjs",
-    "sentry:upload": "node --env-file-if-exists=.env scripts/upload-sourcemaps.mjs",
-    "sentry:bridge": "node --env-file-if-exists=.env scripts/sentry-to-issue.mjs",
-    "sentry:publish": "node --env-file-if-exists=.env scripts/sentry-to-issue.mjs --publish --watch",
+    "test": "npm run build && node --test dist/test/*.test.js",
     "check": "npm run lint && npm run typecheck && npm test"
   },
   "dependencies": {
@@ -27,7 +24,6 @@
   },
   "devDependencies": {
     "@eslint/js": "9.39.5",
-    "@sentry/cli": "3.8.1",
     "@types/express": "5.0.6",
     "@types/node": "24.19.2",
     "eslint": "9.39.5",

@@ -1,19 +1,17 @@
 # Instruções para agentes
 
 - Escreva documentação, diagnósticos e descrições de PR em português do Brasil.
-- Leia `docs/SPEC.md` e identifique o cenário de `docs/FALHAS.md` associado à tarefa.
-- Priorize o escopo de 50 minutos de `docs/SPEC.md`: somente CHK-001 é obrigatório; CAT-001 é reserva opcional e os demais casos são complementares. Não expanda a implementação para esses casos sem uma tarefa específica.
-- Respeite os contratos HTTP e os limites deste repositório.
-- As soluções públicas em `docs/SOLUCOES.md` podem ser consultadas; informe no PR se foram usadas.
+- Leia `docs/SPEC.md` e o README para compreender contratos, comandos e limites do serviço.
+- Investigue o incidente recebido com base no código, nos testes e nas evidências de execução. Não amplie o escopo sem uma tarefa específica.
 - Reproduza a falha, acrescente um teste de regressão e aplique uma correção mínima.
 - Não desative o Sentry, não esconda exceções, não enfraqueça testes e não altere fixtures para evitar o caso.
-- Relate apenas comandos e verificações realmente executados. Os comandos de execução e verificação estão no README. `main` contém a base saudável; defeitos de demonstração devem ficar em revisões isoladas.
+- Relate apenas comandos e verificações realmente executados.
 - Não publique credenciais ou dados reais. Não faça merge nem deploy como parte de uma tarefa de diagnóstico ou abertura de PR.
-- Preserve branches e registros dos cenários. Não reescreva o histórico de ensaios.
+- Preserve branches e histórico existentes.
 - Ao concluir a tarefa, encerre todos os processos que você iniciou.
 
 ## Patchwork, skills e Sentry
 
-- Em uma execução do Patchwork, leia e use `.agents/skills/service-regression/SKILL.md` e a skill compartilhada `patchwork-investigation`, instalada pelo workflow em `.agents/skills/patchwork-investigation/SKILL.md`.
-- Consulte o MCP `sentry` para o incidente, evento e release recebidos. O workflow limita o servidor ao projeto deste repositório e a ferramentas de leitura.
-- O escopo de arquivos e a branch autorizada estão em `.github/patchwork.json`. A habilitação do Patchwork não autoriza criar novos defeitos de demonstração.
+- Em uma execução do Patchwork, leia e use `.agents/skills/service-regression/SKILL.md` e `.agents/skills/patchwork-investigation/SKILL.md`, disponibilizada pelo workflow.
+- Consulte o MCP `sentry` para o incidente, evento e release recebidos. O servidor é limitado ao projeto deste repositório e a ferramentas de leitura.
+- O escopo de arquivos, o padrão de testes e a branch autorizada estão em `.github/patchwork.json`.

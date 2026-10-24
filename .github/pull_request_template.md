@@ -1,15 +1,11 @@
-## Problema e cenário
+## Problema
 
-Vincule a issue e informe o cenário, a revisão defeituosa e a base do PR.
+Vincule a issue e informe a revisão afetada e a base do PR.
 
 ## Causa e correção
 
-Explique o diagnóstico e a mudança de comportamento.
+Explique o diagnóstico com as evidências observadas e a mudança de comportamento.
 
 ## Validação
 
 Informe comandos realmente executados, teste falhando antes e passando depois, casos vizinhos e limitações.
-
-## Uso de soluções de referência
-
-Informe se `docs/SOLUCOES.md` ou outra solução pública foi consultada.
