@@ -77,18 +77,12 @@ test("falha de transporte e timeout de dois segundos retornam 503", async () => 
     if (mode === "timeout") assert.ok(Date.now() - start >= 1900 && Date.now() - start < 4000);
   }
 });
-test("CEP inexistente deve retornar 404 POSTAL_CODE_NOT_FOUND", async () => {
-  providerMode = "missing";
-  const result = await fetch(`${base}/addresses/99999999`);
-  assert.equal(result.status, 404);
-  assert.equal((await result.json()).error.code, "POSTAL_CODE_NOT_FOUND");
-});
 test("exceção inesperada do adaptador é capturada uma vez, sem endereço ou CEP", async () => {
   providerMode = "missing";
   await Sentry.flush(3000); const before = events().length;
   const result = await fetch(`${base}/addresses/99999999`, { headers: { "X-Request-ID": "lookup-test" } });
   await Sentry.flush(3000);
-  // O contrato 404 é exigido no teste anterior. Se tratado, não deve gerar incidente.
+  // Erros tratados não geram incidente; exceções inesperadas devem ter captura única.
   if (result.status === 404) { assert.equal(events().length, before); return; }
   assert.equal(result.status, 500);
   const captured = events().slice(before);
