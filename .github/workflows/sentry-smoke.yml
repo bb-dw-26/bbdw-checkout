@@ -8,6 +8,6 @@ jobs:
     permissions:
       contents: read
       copilot-requests: write
-    uses: bb-dw-26/patchwork/.github/workflows/sentry-smoke.yml@856acdde6be784ae9b0c6c736cb60dd110a46edb
+    uses: bb-dw-26/patchwork/.github/workflows/sentry-smoke.yml@4ed84528af08d5767212f64465d85f1450fd8c90
     secrets:
       SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
