@@ -16,7 +16,7 @@
     "src/modules/orders/dto/delivery-address.dto.ts",
     "src/modules/orders/stores/idempotency.store.ts"
   ],
-  "testPattern": "^src/modules/orders/[^/]+/patchwork-[a-z0-9-]+\\.test\\.ts$",
+  "testPattern": "^src/modules/orders/[^/]+/[a-z0-9.-]+\\.test\\.ts$",
   "scenario": "CHK-003",
   "handoff": {
     "targets": [

@@ -3,7 +3,7 @@ name: service-regression
 description: Reproduzir e validar correções de incidentes em bbdw-checkout usando os contratos e testes específicos deste serviço.
 ---
 
-Leia `docs/SPEC.md` e investigue o incidente recebido. O escopo autorizado de produção está listado em `sourceFiles` de `.github/patchwork.json`; adicione testes novos que correspondam a `testPattern` da mesma configuração. A configuração confiável do Patchwork fica em `.github/patchwork.json`.
+Leia `docs/SPEC.md` e investigue o incidente recebido. O escopo autorizado de produção está listado em `sourceFiles` de `.github/patchwork.json`; acrescente casos de regressão nos arquivos permitidos por `testPattern` da mesma configuração. Prefira acrescentar à suíte existente, preservando suas linhas. Arquivos novos, quando necessários, devem ter nomes do comportamento testado, sem prefixo do agente ou ID de cenário. A configuração confiável do Patchwork fica em `.github/patchwork.json`.
 
 Use doubles locais para catalog e ViaCEP. Derive a reprodução das evidências do incidente e preserve os contratos HTTP. Não reconfigure serviços reais.
 

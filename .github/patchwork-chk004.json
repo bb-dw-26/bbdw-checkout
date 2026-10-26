@@ -11,6 +11,6 @@
     "src/modules/addresses/clients/viacep.client.ts",
     "src/modules/addresses/controllers/addresses.controller.ts"
   ],
-  "testPattern": "^src/modules/addresses/(?:[^/]+/)?patchwork-[a-z0-9-]+\\.test\\.ts$",
+  "testPattern": "^src/modules/addresses/(?:[^/]+/)?[a-z0-9.-]+\\.test\\.ts$",
   "scenario": "CHK-004"
 }
