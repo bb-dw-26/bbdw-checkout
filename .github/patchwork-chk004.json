@@ -1,5 +1,5 @@
 {
-  "repository": "bbdw-gh-action/bbdw-checkout",
+  "repository": "bb-dw-26/bbdw-checkout",
   "baseBranch": "main",
   "runtime": "node",
   "sentry": {

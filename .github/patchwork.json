@@ -1,5 +1,5 @@
 {
-  "repository": "bbdw-gh-action/bbdw-checkout",
+  "repository": "bb-dw-26/bbdw-checkout",
   "baseBranch": "main",
   "runtime": "node",
   "sentry": {
@@ -21,7 +21,7 @@
   "handoff": {
     "targets": [
       {
-        "repository": "bbdw-gh-action/bbdw-storefront",
+        "repository": "bb-dw-26/bbdw-storefront",
         "baseBranch": "main",
         "service": "bbdw-storefront",
         "description": "Interface e estado local da compra"
