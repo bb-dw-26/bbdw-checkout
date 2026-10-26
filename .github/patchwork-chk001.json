@@ -1,6 +1,6 @@
 {
   "repository": "bb-dw-26/bbdw-checkout",
-  "baseBranch": "demo/chk-001",
+  "baseBranch": "main",
   "runtime": "node",
   "sentry": {
     "org": "bbdw-workshop-jj",
@@ -9,7 +9,8 @@
   },
   "sourceFiles": [
     "src/modules/orders/services/orders.service.ts",
-    "src/modules/orders/pipes/create-order.pipe.ts",
+    "src/modules/orders/dto/create-order.dto.ts",
+    "src/modules/orders/dto/order-item.dto.ts",
     "src/integrations/clients/dependency-http.client.ts",
     "src/integrations/clients/users.client.ts",
     "src/integrations/clients/catalog.client.ts"
