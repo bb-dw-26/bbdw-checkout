@@ -5,9 +5,10 @@ permissions:
   contents: read
 jobs:
   smoke:
+    name: Conferir integração
     permissions:
       contents: read
       copilot-requests: write
-    uses: bb-dw-26/patchwork/.github/workflows/sentry-smoke.yml@420eb3bd7334830acc8f483de256d5b002e384e4
+    uses: bb-dw-26/patchwork/.github/workflows/sentry-smoke.yml@main
     secrets:
       SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
