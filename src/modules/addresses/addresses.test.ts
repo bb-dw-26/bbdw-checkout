@@ -117,3 +117,14 @@ test("reserva, concorrência, captura única, replay e conflito com conteúdo di
   for (const value of ["intent-secret", "01001000", "Rua privada", "Cidade privada", '"deliveryAddress"']) assert.ok(!JSON.stringify(captured).includes(value));
   delete process.env.CHECKOUT_DEMO_DELAY_MS;
 });
+test("CEP inexistente no provedor retorna 404 POSTAL_CODE_NOT_FOUND sem captura de erro", async () => {
+  providerMode = "missing";
+  await Sentry.flush(3000); const before = events().length;
+  const result = await fetch(`${base}/addresses/99999999`, { headers: { "X-Request-ID": "lookup-not-found" } });
+  await Sentry.flush(3000);
+  assert.equal(result.status, 404);
+  const body = await result.json();
+  assert.equal(body.error.code, "POSTAL_CODE_NOT_FOUND");
+  assert.equal(body.requestId, "lookup-not-found");
+  assert.equal(events().length, before);
+});
