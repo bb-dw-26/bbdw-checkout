@@ -54,6 +54,18 @@ after(async () => {
   for (const name of ["SENTRY_DSN", "CATALOG_URL", "VIACEP_BASE_URL", "CHECKOUT_DEMO_DELAY_MS"]) delete process.env[name];
 });
 const events = () => envelopes.flatMap((body) => body.split("\n").filter(Boolean).map((line) => JSON.parse(line))).filter((item) => item.exception);
+test("CEP inexistente retorna 404 POSTAL_CODE_NOT_FOUND sem captura de erro", async () => {
+  providerMode = "missing";
+  await Sentry.flush(3000);
+  const before = envelopes.length;
+  const result = await fetch(`${base}/addresses/99999999`, { headers: { "X-Request-ID": "address-not-found-test" } });
+  assert.equal(result.status, 404);
+  const body = await result.json();
+  assert.equal(body.error.code, "POSTAL_CODE_NOT_FOUND");
+  assert.equal(body.requestId, "address-not-found-test");
+  await Sentry.flush(3000);
+  assert.equal(envelopes.length, before);
+});
 test("CEP mascarado é normalizado e formato inválido não acessa o provedor", async () => {
   providerMode = "ok";
   const result = await fetch(`${base}/addresses/01001-000`);
