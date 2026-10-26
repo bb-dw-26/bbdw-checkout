@@ -1,0 +1,13 @@
+name: Verificar Copilot e Sentry
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  smoke:
+    permissions:
+      contents: read
+      copilot-requests: write
+    uses: bb-dw-26/patchwork/.github/workflows/sentry-smoke.yml@56b61ddc4c759636b40e148e692a810ca0e2ce9a
+    secrets:
+      SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}

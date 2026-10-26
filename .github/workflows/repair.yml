@@ -32,7 +32,7 @@ jobs:
       pull-requests: write
       copilot-requests: write
     # Patchwork v3: motor e workflow fixados na mesma revisão.
-    uses: bb-dw-26/patchwork/.github/workflows/patchwork.yml@10afeca001ef2360674a1df41f72e7a4a4f836b7
+    uses: bb-dw-26/patchwork/.github/workflows/patchwork.yml@56b61ddc4c759636b40e148e692a810ca0e2ce9a
     with:
       issue_number: ${{ format('{0}', github.event.issue.number || inputs.issue_number) }}
       config_path: ${{ (inputs.scenario == 'CHK-004' || contains(github.event.issue.labels.*.name, 'scenario:CHK-004')) && '.github/patchwork-chk004.json' || '.github/patchwork.json' }}
