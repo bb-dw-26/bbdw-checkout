@@ -92,6 +92,15 @@ test("exceção inesperada do adaptador é capturada uma vez, sem endereço ou C
   for (const privateValue of ["99999999", "01001000", "Rua privada", "Bairro privado", "Cidade privada", '"erro":true'])
     assert.ok(!JSON.stringify(captured).includes(privateValue));
 });
+test("CEP inexistente (erro do ViaCEP) retorna 404 sem captura no Sentry", async () => {
+  providerMode = "missing";
+  await Sentry.flush(3000); const before = events().length;
+  const result = await fetch(`${base}/addresses/99999999`);
+  assert.equal(result.status, 404);
+  assert.equal((await result.json()).error.code, "POSTAL_CODE_NOT_FOUND");
+  await Sentry.flush(3000);
+  assert.equal(events().length, before);
+});
 test("reserva, concorrência, captura única, replay e conflito com conteúdo diferente", async () => {
   process.env.CHECKOUT_DEMO_DELAY_MS = "150";
   const order = { fulfillment: "delivery", deliveryAddress: { postalCode: "01001-000", street: " Rua privada ", number: "s/n", city: "Cidade privada", state: "sp" }, items: [{ productId: "product-standard", quantity: 2 }] };
