@@ -21,6 +21,9 @@ export class ViaCepClient {
     } catch {
       throw new ApiError(503, "ADDRESS_LOOKUP_UNAVAILABLE", "Não foi possível consultar o CEP. Tente novamente.");
     }
+    // ViaCEP responde 200 com { "erro": true } quando o CEP não existe.
+    if (data?.erro === true || data?.erro === "true")
+      throw new ApiError(404, "POSTAL_CODE_NOT_FOUND", "CEP não encontrado.");
     try {
       return {
         postalCode,
