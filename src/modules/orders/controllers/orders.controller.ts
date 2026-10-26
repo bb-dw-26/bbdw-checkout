@@ -1,4 +1,11 @@
-import { Body, Controller, Headers, Inject, Post, ValidationPipe } from "@nestjs/common";
+import {
+  Body,
+  Controller,
+  Headers,
+  Inject,
+  Post,
+  ValidationPipe,
+} from "@nestjs/common";
 import { RequestId } from "../../../common/http/decorators/request-id.decorator";
 import { validationExceptionFactory } from "../../../common/http/exceptions/validation-exception.factory";
 import { CreateOrderDto } from "../dto/create-order.dto";
@@ -10,14 +17,16 @@ export class OrdersController {
 
   @Post()
   create(
-    @Body(new ValidationPipe({
-      // O tsx usado em desenvolvimento não emite design:paramtypes.
-      expectedType: CreateOrderDto,
-      transform: true,
-      transformOptions: { enableImplicitConversion: false },
-      validationError: { target: false, value: false },
-      exceptionFactory: validationExceptionFactory,
-    })) body: CreateOrderDto,
+    @Body(
+      new ValidationPipe({
+        // O tsx usado em desenvolvimento não emite design:paramtypes.
+        expectedType: CreateOrderDto,
+        transform: true,
+        transformOptions: { enableImplicitConversion: false },
+        validationError: { target: false, value: false },
+        exceptionFactory: validationExceptionFactory,
+      }),
+    ) body: CreateOrderDto,
     @RequestId() requestId: string,
     @Headers("idempotency-key") key?: string,
     @Headers("x-client-release") clientRelease?: string,

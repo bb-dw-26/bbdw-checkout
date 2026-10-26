@@ -1,5 +1,7 @@
 import * as Sentry from "@sentry/node";
 
+const captured = new WeakSet<object>();
+
 // Captura explícita no filtro HTTP: sem uma segunda captura automática do Nest.
 export function initTelemetry() {
   Sentry.init({
@@ -18,6 +20,7 @@ export function initTelemetry() {
       event.server_name = "bbdw-checkout";
       for (const exception of event.exception?.values ?? []) {
         for (const frame of exception.stacktrace?.frames ?? []) {
+          delete frame.vars;
           const filename = frame.filename?.replaceAll("\\", "/");
           const marker = "/dist/src/";
           if (filename?.includes(marker)) {
@@ -38,6 +41,10 @@ export function captureServerError(
   tags: Record<string, string> = {},
 ) {
   if (!Sentry.isEnabled()) return;
+  if (error instanceof Error) {
+    if (captured.has(error)) return;
+    captured.add(error);
+  }
   Sentry.withScope((scope) => {
     scope.setTag("service", "bbdw-checkout");
     scope.setTag("scenario", process.env.DEMO_SCENARIO || "none");

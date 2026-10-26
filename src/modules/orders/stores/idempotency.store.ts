@@ -62,6 +62,7 @@ export class IdempotencyStore<T> {
       if (!previous.reported) {
         previous.reported = true;
         captureServerError(error, hash(requestId), {
+          scenario: "CHK-003",
           error_code: "CHECKOUT_IN_PROGRESS",
           idempotency_key_hash: hash(key),
           first_request_id_hash: hash(previous.requestId),

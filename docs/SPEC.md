@@ -6,11 +6,11 @@ Aplicação com dados fictícios em memória, contratos HTTP/JSON, build e CI pr
 
 ## Objetivo e responsabilidade
 
-Consultar clientes e produtos por HTTP, validar o carrinho e criar pedidos fictícios.
+Consultar produtos por HTTP e endereços por CEP, validar o carrinho e criar pedidos fictícios.
 
-É dono dos pedidos. Usa os contratos públicos de users e catalog; não acessa diretamente os dados desses serviços. Não processa pagamentos reais.
+É dono dos pedidos. Usa o contrato público do catálogo e consulta CEP via ViaCEP; não acessa diretamente os dados desses serviços. Não processa pagamentos reais.
 
-Tecnologia: NestJS e TypeScript. Porta local padrão: `3003`. Clientes e produtos são consultados nas APIs de users e catalog. Pedidos retornam confirmação sem persistência ou histórico.
+Tecnologia: NestJS e TypeScript. Porta local padrão: `3003`. Produtos são consultados no catálogo. O formulário consulta endereços em GET /addresses/:postalCode. Pedidos retornam confirmação sem persistência ou histórico.
 
 ## Interface e regras de negócio
 
@@ -24,24 +24,24 @@ A confirmação da interface usa diretamente a resposta de POST /orders; consult
 Requisição:
 
 ```json
-{"customerId":"customer-pickup","fulfillment":"pickup","items":[{"productId":"product-standard","quantity":2}]}
+{"fulfillment":"pickup","items":[{"productId":"product-standard","quantity":2}]}
 ```
 
 Resposta de criação (ID ilustrativo):
 
 ```json
-{"id":"order-example","customerId":"customer-pickup","fulfillment":"pickup","deliveryAddress":null,"items":[{"productId":"product-standard","quantity":2,"unitPriceCents":4000}],"totalCents":8000,"currency":"BRL","status":"confirmed"}
+{"id":"order-example","fulfillment":"pickup","deliveryAddress":null,"items":[{"productId":"product-standard","quantity":2,"unitPriceCents":4000}],"totalCents":8000,"currency":"BRL","status":"confirmed"}
 ```
 
-`fulfillment` aceita `pickup` ou `delivery`. Retirada não exige endereço. Entrega exige endereço no perfil e copia esse endereço para `deliveryAddress`. O carrinho deve ter ao menos um item, quantidades inteiras de 1 a 99 e IDs de produto únicos. O preço vem do catálogo; o cliente não informa o total. Não há frete, desconto ou tributo nesta versão.
+`fulfillment` aceita `pickup` ou `delivery`. Retirada não exige endereço. Entrega exige `deliveryAddress` informado no corpo; a criação de pedidos não consulta o provedor de CEP. O carrinho deve ter ao menos um item, quantidades inteiras de 1 a 99 e IDs de produto únicos. O preço vem do catálogo; o cliente não informa o total. Não há frete, desconto ou tributo nesta versão.
 
-Validações retornam 422: `EMPTY_CART`, `ADDRESS_REQUIRED`, `INVALID_QUANTITY`, `DUPLICATE_PRODUCT`, `INVALID_FULFILLMENT`, `CUSTOMER_NOT_FOUND`, `PRODUCT_NOT_FOUND` ou `PRODUCT_UNAVAILABLE`, conforme a causa. Falha de rede ou HTTP 5xx de dependência retorna 503, `DEPENDENCY_UNAVAILABLE`. Use timeout configurável, inicialmente 2 segundos, sem repetição automática de criação de pedidos.
+Validações retornam 422: `EMPTY_CART`, `ADDRESS_REQUIRED`, `INVALID_QUANTITY`, `DUPLICATE_PRODUCT`, `INVALID_FULFILLMENT`, `INVALID_ADDRESS`, `PRODUCT_NOT_FOUND` ou `PRODUCT_UNAVAILABLE`, conforme a causa. Falha de rede ou HTTP 5xx de dependência retorna 503, `DEPENDENCY_UNAVAILABLE`. Use timeout configurável, inicialmente 2 segundos, sem repetição automática de criação de pedidos.
 
 ## Contratos comuns
 
 ### Intenção de compra
 
-`POST /orders` aceita o cabeçalho opcional `Idempotency-Key` (1–128 caracteres alfanuméricos, ponto, hífen ou sublinhado). Clientes sem chave mantêm o contrato anterior. A chave identifica cliente, modalidade e itens; trocar o conteúdo com a mesma chave retorna `409 IDEMPOTENCY_CONFLICT`. Chave inválida retorna `422 INVALID_IDEMPOTENCY_KEY`.
+`POST /orders` aceita o cabeçalho opcional `Idempotency-Key` (1–128 caracteres alfanuméricos, ponto, hífen ou sublinhado). Clientes sem chave mantêm o contrato anterior. A chave identifica modalidade, itens ordenados por produto e endereço normalizado de entrega (nulo na retirada); trocar o conteúdo com a mesma chave retorna `409 IDEMPOTENCY_CONFLICT`. Chave inválida retorna `422 INVALID_IDEMPOTENCY_KEY`.
 
 A reserva ocorre antes das consultas assíncronas. Enquanto uma tentativa está pendente, a repetição retorna `409 CHECKOUT_IN_PROGRESS`. Depois do sucesso, repetir a mesma compra devolve o pedido original com 201, sem nova consulta às dependências. Falhas liberam a reserva para uma tentativa manual. Não há repetição automática.
 
@@ -70,3 +70,11 @@ Os comandos locais estão no [README](../README.md). A imagem é construída pel
 ## Automação compartilhada
 
 Integração com o Patchwork configurada no workflow local. Consulte [operação, skills e MCP](PATCHWORK.md).
+
+## Endereço de entrega e consulta de CEP
+
+`deliveryAddress` é nulo na retirada. Para entrega, contém `postalCode`, `street`, `number`, `city`, `state` e, opcionalmente, `neighborhood` e `complement`. Textos são aparados, CEP mascarado é normalizado para oito dígitos e UF para duas letras maiúsculas. Rua, número e cidade não podem estar vazios. Número aceita `s/n`. Endereço ausente retorna `422 ADDRESS_REQUIRED`; campos inválidos retornam `422 INVALID_ADDRESS`.
+
+`GET /addresses/:postalCode` retorna 200 com `postalCode`, `street`, `neighborhood`, `city` e `state`. Formato inválido retorna `422 INVALID_POSTAL_CODE`; CEP inexistente deve retornar `404 POSTAL_CODE_NOT_FOUND`; falhas de transporte retornam `503 ADDRESS_LOOKUP_UNAVAILABLE`. O cliente ViaCEP usa timeout de dois segundos, sem repetição automática. `VIACEP_BASE_URL` permite usar servidor local nos testes; padrão `https://viacep.com.br/ws`.
+
+Não registrar CEP, endereço, corpo do pedido ou resposta bruta do provedor na telemetria. Capturas identificam o componente e a release executada. O formulário permanece editável após a consulta.

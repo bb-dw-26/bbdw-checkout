@@ -11,7 +11,7 @@ on:
       scenario:
         description: Cenário autorizado
         type: choice
-        options: [CHK-003, CHK-001]
+        options: [CHK-003, CHK-004]
         default: CHK-003
 permissions:
   contents: read
@@ -32,10 +32,10 @@ jobs:
       pull-requests: write
       copilot-requests: write
     # Patchwork v3: motor e workflow fixados na mesma revisão.
-    uses: bb-dw-26/patchwork/.github/workflows/patchwork.yml@62fd23ef06a0af15107b31669b3c1461853f6331
+    uses: bbdw-gh-action/patchwork/.github/workflows/patchwork.yml@10afeca001ef2360674a1df41f72e7a4a4f836b7
     with:
       issue_number: ${{ format('{0}', github.event.issue.number || inputs.issue_number) }}
-      config_path: ${{ inputs.scenario == 'CHK-001' && '.github/patchwork-chk001.json' || '.github/patchwork.json' }}
+      config_path: ${{ (inputs.scenario == 'CHK-004' || contains(github.event.issue.labels.*.name, 'scenario:CHK-004')) && '.github/patchwork-chk004.json' || '.github/patchwork.json' }}
       node_version: '24'
       install_command: npm ci
     secrets:

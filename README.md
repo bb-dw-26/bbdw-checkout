@@ -1,6 +1,6 @@
 # bbdw-checkout
 
-Serviço de checkout em NestJS e TypeScript. Consulta clientes e produtos por HTTP, valida o carrinho e cria pedidos fictícios.
+Serviço de checkout em NestJS e TypeScript. Consulta produtos e endereços por HTTP, valida o carrinho e cria pedidos fictícios.
 
 ## Executar localmente
 
@@ -21,7 +21,7 @@ npm run check
 
 Encerre o processo com **Ctrl+C** ao terminar. Cada aplicação tem seu próprio lockfile ou módulo Go, testes e workflow em `.github/workflows/ci.yml`. O CI também constrói a imagem; a publicação e o deploy serão configurados quando a hospedagem for escolhida.
 
-Para iniciar as quatro aplicações juntas, consulte [execução integrada](https://github.com/bb-dw-26/bbdw-storefront/blob/main/docs/EXECUCAO.md).
+Para iniciar as três aplicações juntas, consulte [execução integrada](https://github.com/bbdw-gh-action/bbdw-storefront/blob/main/docs/EXECUCAO.md).
 
 ## Arquitetura
 
@@ -39,20 +39,23 @@ src/
       middleware/             # request ID antes do parser JSON e do CORS
     telemetry/                # Sentry e encerramento da telemetria
   modules/
+    addresses/                # consulta de CEP via ViaCEP
     health/                   # endpoint de saúde
     orders/
       controllers/            # rotas e contratos HTTP
       services/               # regras de negócio
-      dto/                    # contrato de entrada
-      pipes/                  # validação de entrada
+      dto/                    # classes com decorators de validação
       stores/                 # reserva e replay de intenções de compra
   integrations/
-    clients/                  # clientes HTTP de users e catalog
+    clients/                  # cliente HTTP do catálogo
 ```
 
 Testes `*.test.ts` ficam em `src`, junto do componente ou módulo verificado. Cada módulo declara seus controllers, providers e dependências; controllers delegam as regras aos services. O filtro global é registrado pelo `HttpModule`. O request ID usa middleware para cobrir também JSON inválido, rotas inexistentes e preflight; interceptors devem ser adicionados quando houver uma responsabilidade específica no ciclo do controller.
 
+A entrada de pedidos usa o `ValidationPipe` nativo do Nest, com `class-validator` e `class-transformer`. Os DTOs declaram as regras, incluindo itens aninhados e produtos únicos. O tipo do DTO é informado em `expectedType` para validar também no desenvolvimento com `tsx`, que não emite metadados de tipos. A `exceptionFactory` apenas traduz as falhas para os códigos e mensagens HTTP existentes; quantidades em texto não são convertidas em números.
+
 `npm run check` executa lint, tipos e todos os testes recursivamente. `npm run build` inclui os testes compilados usados pelo Patchwork. `npm run build:production` gera somente código de produção e é usado pelo Docker. Ambos limpam `dist` antes de compilar. A configuração do Patchwork acompanha os caminhos dos módulos e exige regressões dentro de `src`.
+
 
 ## Documentação
 
@@ -61,9 +64,8 @@ Testes `*.test.ts` ficam em `src`, junto do componente ou módulo verificado. Ca
 
 ## Outros repositórios
 
-- [bbdw-users](https://github.com/bb-dw-26/bbdw-users)
-- [bbdw-catalog](https://github.com/bb-dw-26/bbdw-catalog)
-- [bbdw-storefront](https://github.com/bb-dw-26/bbdw-storefront)
+- [bbdw-catalog](https://github.com/bbdw-gh-action/bbdw-catalog)
+- [bbdw-storefront](https://github.com/bbdw-gh-action/bbdw-storefront)
 
 ## Automação compartilhada
 

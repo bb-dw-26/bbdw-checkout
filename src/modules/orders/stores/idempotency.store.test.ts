@@ -5,7 +5,6 @@ import { createServer } from "node:http";
 import type { AddressInfo } from "node:net";
 import * as Sentry from "@sentry/node";
 import { createApp } from "../../../app";
-import { UsersClient } from "../../../integrations/clients/users.client";
 import { CatalogClient } from "../../../integrations/clients/catalog.client";
 import { IdempotencyStore } from "./idempotency.store";
 import { initTelemetry } from "../../../common/telemetry/telemetry";
@@ -35,22 +34,20 @@ test("reserva antes dos awaits, 409 único no Sentry, replay e contrato sem chav
     started = resolve;
   });
   let calls = 0;
-  const users = app.get(UsersClient);
   const catalog = app.get(CatalogClient);
-  users.find = async (id) => {
+  catalog.find = async (id) => {
     calls++;
     started();
     await pending;
-    return { id, address: null };
-  };
-  catalog.find = async (id) => ({
+    return {
     id,
     priceCents: 4000,
     currency: "BRL",
     available: true,
-  });
+    };
+  };
   const input = {
-    customerId: "never-publish-customer",
+    deliveryAddress: null,
     fulfillment: "pickup",
     items: [{ productId: "product-standard", quantity: 2 }],
   };

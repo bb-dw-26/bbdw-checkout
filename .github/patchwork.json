@@ -1,5 +1,5 @@
 {
-  "repository": "bb-dw-26/bbdw-checkout",
+  "repository": "bbdw-gh-action/bbdw-checkout",
   "baseBranch": "main",
   "runtime": "node",
   "sentry": {
@@ -9,18 +9,20 @@
   },
   "sourceFiles": [
     "src/modules/orders/services/orders.service.ts",
-    "src/modules/orders/pipes/create-order.pipe.ts",
+    "src/modules/orders/dto/create-order.dto.ts",
+    "src/modules/orders/dto/order-item.dto.ts",
     "src/integrations/clients/dependency-http.client.ts",
-    "src/integrations/clients/users.client.ts",
-    "src/integrations/clients/catalog.client.ts"
+    "src/integrations/clients/catalog.client.ts",
+    "src/modules/orders/dto/delivery-address.dto.ts",
+    "src/modules/orders/stores/idempotency.store.ts"
   ],
   "testPattern": "^src/modules/orders/[^/]+/patchwork-[a-z0-9-]+\\.test\\.ts$",
   "scenario": "CHK-003",
   "handoff": {
     "targets": [
       {
-        "repository": "bb-dw-26/bbdw-storefront",
-        "baseBranch": "demo/chk-003",
+        "repository": "bbdw-gh-action/bbdw-storefront",
+        "baseBranch": "main",
         "service": "bbdw-storefront",
         "description": "Interface e estado local da compra"
       }

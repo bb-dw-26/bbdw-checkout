@@ -1,0 +1,16 @@
+{
+  "repository": "bbdw-gh-action/bbdw-checkout",
+  "baseBranch": "main",
+  "runtime": "node",
+  "sentry": {
+    "org": "bbdw-workshop-jj",
+    "project": "bbdw-checkout",
+    "projectId": "4512294853869568"
+  },
+  "sourceFiles": [
+    "src/modules/addresses/clients/viacep.client.ts",
+    "src/modules/addresses/controllers/addresses.controller.ts"
+  ],
+  "testPattern": "^src/modules/addresses/(?:[^/]+/)?patchwork-[a-z0-9-]+\\.test\\.ts$",
+  "scenario": "CHK-004"
+}

@@ -5,9 +5,11 @@ import {
   IsArray,
   IsIn,
   IsObject,
-  Matches,
+  IsDefined,
+  ValidateIf,
   ValidateNested,
 } from "class-validator";
+import { DeliveryAddressDto } from "./delivery-address.dto";
 import { OrderItemDto } from "./order-item.dto";
 
 const cartError = {
@@ -20,12 +22,6 @@ const productError = {
 };
 
 export class CreateOrderDto {
-  @Matches(/\S/, {
-    message: "Selecione um cliente.",
-    context: { code: "CUSTOMER_NOT_FOUND" },
-  })
-  customerId!: string;
-
   @IsIn(["pickup", "delivery"], {
     message: "Selecione retirada ou entrega.",
     context: { code: "INVALID_FULFILLMENT" },
@@ -42,4 +38,11 @@ export class CreateOrderDto {
   @ValidateNested({ each: true, ...productError })
   @Type(() => OrderItemDto)
   items!: OrderItemDto[];
+
+  @ValidateIf((input: CreateOrderDto) => input.fulfillment === "delivery")
+  @IsDefined({ message: "Informe o endereço de entrega.", context: { code: "ADDRESS_REQUIRED" } })
+  @IsObject({ message: "Informe um endereço válido.", context: { code: "INVALID_ADDRESS" } })
+  @ValidateNested()
+  @Type(() => DeliveryAddressDto)
+  deliveryAddress?: DeliveryAddressDto | null;
 }

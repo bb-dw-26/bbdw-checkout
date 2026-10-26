@@ -33,7 +33,7 @@ test("HTTP 500 envia um evento por requisição, isolado e sem dados do cliente"
   process.env.SENTRY_DSN = `http://public@127.0.0.1:${(collector.address() as AddressInfo).port}/1`;
   process.env.SENTRY_RELEASE = "test-release";
   process.env.SENTRY_ENVIRONMENT = "test";
-  process.env.DEMO_SCENARIO = "CHK-001";
+  process.env.DEMO_SCENARIO = "SDK-SMOKE";
   process.env.DEMO_RUN_ID = "local-test";
   initTelemetry();
   const app = await NestFactory.create(ProbeModule, { logger: false });
@@ -58,7 +58,7 @@ test("HTTP 500 envia um evento por requisição, isolado e sem dados do cliente"
     for (const event of events) {
       assert.equal(event.release, "test-release");
       assert.equal(event.environment, "test");
-      assert.equal(event.tags.scenario, "CHK-001");
+      assert.equal(event.tags.scenario, "SDK-SMOKE");
       assert.equal(event.tags.service, "bbdw-checkout");
       assert.equal(event.request, undefined);
       assert.equal(event.user, undefined);
