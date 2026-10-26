@@ -27,12 +27,12 @@ jobs:
         contains(github.event.issue.labels.*.name, 'agent:repair') &&
         contains(github.event.issue.labels.*.name, 'agent:handoff')))
     permissions:
-      contents: write
-      issues: write
-      pull-requests: write
+      contents: read
+      issues: read
+      pull-requests: read
       copilot-requests: write
     # Patchwork v3: motor e workflow fixados na mesma revisão.
-    uses: bb-dw-26/patchwork/.github/workflows/patchwork.yml@4ed84528af08d5767212f64465d85f1450fd8c90
+    uses: bb-dw-26/patchwork/.github/workflows/patchwork.yml@420eb3bd7334830acc8f483de256d5b002e384e4
     with:
       issue_number: ${{ format('{0}', github.event.issue.number || inputs.issue_number) }}
       config_path: ${{ (inputs.scenario == 'CHK-004' || contains(github.event.issue.labels.*.name, 'scenario:CHK-004')) && '.github/patchwork-chk004.json' || '.github/patchwork.json' }}
@@ -40,4 +40,5 @@ jobs:
       install_command: npm ci
     secrets:
       SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+      PATCHWORK_PUBLISH_APP_PRIVATE_KEY: ${{ secrets.PATCHWORK_PUBLISH_APP_PRIVATE_KEY }}
       PATCHWORK_APP_PRIVATE_KEY: ${{ secrets.PATCHWORK_APP_PRIVATE_KEY }}
