@@ -1,6 +1,6 @@
 import { createHash } from "node:crypto";
-import { ApiError } from "./http";
-import { captureServerError } from "./telemetry";
+import { ApiError } from "../../../common/http/exceptions/api.exception";
+import { captureServerError } from "../../../common/telemetry/telemetry";
 
 type Attempt<T> = {
   fingerprint: string;

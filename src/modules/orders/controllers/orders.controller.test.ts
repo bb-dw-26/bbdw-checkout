@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { createServer, type Server } from "node:http";
 import type { AddressInfo } from "node:net";
 import type { INestApplication } from "@nestjs/common";
-import { createApp } from "../src/app";
+import { createApp } from "../../../app";
 
 let app: INestApplication;
 let dependency: Server;
@@ -131,6 +131,33 @@ test("JSON primitivo é rejeitado pelo parser HTTP com envelope 400", async () =
   assert.equal(result.status, 400);
   assert.equal(result.body.error.code, "HTTP_400");
   assert.equal(result.body.requestId, "checkout-test");
+});
+
+test("DTOs rejeitam campos ausentes, tipos incorretos e itens aninhados sem consultar dependências", async () => {
+  const cases: [unknown, string][] = [
+    [{ ...valid, customerId: "   " }, "CUSTOMER_NOT_FOUND"],
+    [{ ...valid, customerId: 123 }, "CUSTOMER_NOT_FOUND"],
+    [{ customerId: valid.customerId, fulfillment: "pickup" }, "EMPTY_CART"],
+    [{ ...valid, items: null }, "EMPTY_CART"],
+    [{ ...valid, items: {} }, "EMPTY_CART"],
+    [{ ...valid, items: [null] }, "PRODUCT_NOT_FOUND"],
+    [{ ...valid, items: ["product-standard"] }, "PRODUCT_NOT_FOUND"],
+    [{ ...valid, items: [[valid.items[0]]] }, "PRODUCT_NOT_FOUND"],
+    [{ ...valid, items: [{ productId: " ", quantity: 1 }] }, "PRODUCT_NOT_FOUND"],
+    [{ ...valid, items: [{ productId: 123, quantity: 1 }] }, "PRODUCT_NOT_FOUND"],
+    ...[undefined, null, "2", true, 0, 100, 1.5].map((quantity): [unknown, string] => [
+      { ...valid, items: [{ productId: "product-standard", quantity }] },
+      "INVALID_QUANTITY",
+    ]),
+  ];
+  const before = calls;
+  for (const [body, code] of cases) {
+    const result = await post(body);
+    assert.equal(result.status, 422, JSON.stringify(body));
+    assert.equal(result.body.error.code, code, JSON.stringify(body));
+    assert.equal(result.body.requestId, "checkout-test");
+  }
+  assert.equal(calls, before);
 });
 test("distingue ausência, indisponibilidade e falha de dependência", async () => {
   for (const [id, status, code] of [

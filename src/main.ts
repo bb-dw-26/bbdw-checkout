@@ -1,4 +1,4 @@
-import "./instrument";
+import "./common/telemetry/instrument";
 import "reflect-metadata";
 import { createApp } from "./app";
 

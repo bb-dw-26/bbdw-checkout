@@ -4,10 +4,11 @@ import assert from "node:assert/strict";
 import { createServer } from "node:http";
 import type { AddressInfo } from "node:net";
 import * as Sentry from "@sentry/node";
-import { createApp } from "../src/app";
-import { Dependencies } from "../src/orders";
-import { IdempotencyStore } from "../src/idempotency";
-import { initTelemetry } from "../src/telemetry";
+import { createApp } from "../../../app";
+import { UsersClient } from "../../../integrations/clients/users.client";
+import { CatalogClient } from "../../../integrations/clients/catalog.client";
+import { IdempotencyStore } from "./idempotency.store";
+import { initTelemetry } from "../../../common/telemetry/telemetry";
 
 test("reserva antes dos awaits, 409 único no Sentry, replay e contrato sem chave", async () => {
   const envelopes: string[] = [];
@@ -34,14 +35,15 @@ test("reserva antes dos awaits, 409 único no Sentry, replay e contrato sem chav
     started = resolve;
   });
   let calls = 0;
-  const dependencies = app.get(Dependencies);
-  dependencies.customer = async (id) => {
+  const users = app.get(UsersClient);
+  const catalog = app.get(CatalogClient);
+  users.find = async (id) => {
     calls++;
     started();
     await pending;
     return { id, address: null };
   };
-  dependencies.product = async (id) => ({
+  catalog.find = async (id) => ({
     id,
     priceCents: 4000,
     currency: "BRL",

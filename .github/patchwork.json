@@ -8,9 +8,13 @@
     "projectId": "4512294853869568"
   },
   "sourceFiles": [
-    "src/orders.ts"
+    "src/modules/orders/services/orders.service.ts",
+    "src/modules/orders/pipes/create-order.pipe.ts",
+    "src/integrations/clients/dependency-http.client.ts",
+    "src/integrations/clients/users.client.ts",
+    "src/integrations/clients/catalog.client.ts"
   ],
-  "testPattern": "^test/patchwork-[a-z0-9-]+\\.test\\.ts$",
+  "testPattern": "^src/modules/orders/[^/]+/patchwork-[a-z0-9-]+\\.test\\.ts$",
   "scenario": "CHK-003",
   "handoff": {
     "targets": [

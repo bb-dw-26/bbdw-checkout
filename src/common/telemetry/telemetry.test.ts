@@ -6,8 +6,10 @@ import type { AddressInfo } from "node:net";
 import { Controller, Get, Module } from "@nestjs/common";
 import { NestFactory } from "@nestjs/core";
 import * as Sentry from "@sentry/node";
-import { ApiError, configureHttp } from "../src/http";
-import { initTelemetry } from "../src/telemetry";
+import { ApiError } from "../http/exceptions/api.exception";
+import { configureHttp } from "../http/configure-http";
+import { HttpModule } from "../http/http.module";
+import { initTelemetry } from "./telemetry";
 
 @Controller()
 class ProbeController {
@@ -16,7 +18,7 @@ class ProbeController {
   @Get("invalid")
   invalid() { throw new ApiError(422, "EMPTY_CART", "Carrinho vazio."); }
 }
-@Module({ controllers: [ProbeController] })
+@Module({ imports: [HttpModule], controllers: [ProbeController] })
 class ProbeModule {}
 
 test("HTTP 500 envia um evento por requisição, isolado e sem dados do cliente", async () => {

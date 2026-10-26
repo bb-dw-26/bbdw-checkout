@@ -1,5 +1,4 @@
 import * as Sentry from "@sentry/node";
-import { Injectable, type OnApplicationShutdown } from "@nestjs/common";
 
 // Captura explícita no filtro HTTP: sem uma segunda captura automática do Nest.
 export function initTelemetry() {
@@ -47,11 +46,4 @@ export function captureServerError(
     scope.setTags(tags);
     Sentry.captureException(error);
   });
-}
-
-@Injectable()
-export class TelemetryShutdown implements OnApplicationShutdown {
-  async onApplicationShutdown() {
-    await Sentry.flush(2000);
-  }
 }
